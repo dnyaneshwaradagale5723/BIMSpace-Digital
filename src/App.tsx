@@ -34,12 +34,15 @@ import { OnlineEstimationCalculator } from './components/OnlineEstimationCalcula
 import { GrowthSecretsModule } from './components/GrowthSecretsModule';
 import { LegalFaqKnowledgeHub } from './components/LegalFaqKnowledgeHub';
 import { TrustSignalsAndBimSection } from './components/TrustSignalsAndBimSection';
+import { AdminAuthModal } from './components/AdminAuthModal';
 import { MOCK_CLIENTS, ClientUser } from './data/agencyData';
 import { SHREEGONDA_CONFIG, SHREEGONDA_PROCESS_STEPS, CONSULTANCY_PACKAGES, Language } from './data/shreegondaData';
 
 export default function App() {
   const [activeClient, setActiveClient] = useState<ClientUser>(MOCK_CLIENTS[0]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState<boolean>(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
   const [isAdminView, setIsAdminView] = useState<boolean>(false);
   const [language, setLanguage] = useState<Language>('mr');
   const [contactMessageSent, setContactMessageSent] = useState<boolean>(false);
@@ -126,9 +129,17 @@ export default function App() {
               ))}
             </div>
 
-            {/* Admin Switcher */}
+            {/* Admin Switcher with Auth Gate */}
             <button
-              onClick={() => setIsAdminView(!isAdminView)}
+              onClick={() => {
+                if (isAdminView) {
+                  setIsAdminView(false);
+                } else if (isAdminAuthenticated) {
+                  setIsAdminView(true);
+                } else {
+                  setIsAdminAuthModalOpen(true);
+                }
+              }}
               className={`font-mono text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 transition-all ${
                 isAdminView
                   ? 'bg-orange-500 text-slate-950 font-bold'
@@ -509,6 +520,15 @@ export default function App() {
         onClose={() => setIsLoginModalOpen(false)}
         currentClient={activeClient}
         onClientSwitch={(client) => setActiveClient(client)}
+      />
+
+      <AdminAuthModal
+        isOpen={isAdminAuthModalOpen}
+        onClose={() => setIsAdminAuthModalOpen(false)}
+        onSuccess={() => {
+          setIsAdminAuthenticated(true);
+          setIsAdminView(true);
+        }}
       />
 
       <WhatsAppSupportButton
