@@ -274,7 +274,7 @@ export default function App() {
                   <div className="text-sm font-bold text-white mt-0.5 truncate">
                     {SHREEGONDA_CONFIG.principalEngineer.split('(')[0]}
                   </div>
-                  <div className="text-[10px] text-orange-400 font-mono mt-1">B.Tech Civil • COA Reg.</div>
+                  <div className="text-[10px] text-orange-400 font-mono mt-1">B.Tech Civil • Consultant</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
@@ -451,27 +451,27 @@ export default function App() {
             </div>
           </div>
 
-          {/* Trust, Authority & Statutory Compliance Badges */}
+          {/* Practice Standards & Technical Services */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-t border-b border-slate-800/80 text-xs">
             <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-              <span className="text-[10px] text-slate-500 font-mono block uppercase">MSME Udyam Reg.</span>
-              <span className="text-white font-bold font-mono">UDYAM-MH-01-08492</span>
-              <span className="text-[10px] text-emerald-400 block mt-0.5">Govt. of India Verified</span>
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Technical Qualification</span>
+              <span className="text-white font-bold font-mono">B.Tech Civil Engineering</span>
+              <span className="text-[10px] text-emerald-400 block mt-0.5">Professional Consultant</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-              <span className="text-[10px] text-slate-500 font-mono block uppercase">GST Identification</span>
-              <span className="text-white font-bold font-mono">27AAHFD5829C1Z4</span>
-              <span className="text-[10px] text-cyan-400 block mt-0.5">Maharashtra Commercial Tax</span>
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Service Coverage</span>
+              <span className="text-white font-bold font-mono">Shrigonda & Ahmednagar</span>
+              <span className="text-[10px] text-cyan-400 block mt-0.5">Site Visits & Supervision</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-              <span className="text-[10px] text-slate-500 font-mono block uppercase">Licensed Engineer Reg.</span>
-              <span className="text-white font-bold font-mono">PWD/CE/2026/A-412</span>
-              <span className="text-[10px] text-orange-400 block mt-0.5">Ahilyanagar District Authorized</span>
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Engineering Code</span>
+              <span className="text-white font-bold font-mono">IS 456 & NBC 2016</span>
+              <span className="text-[10px] text-orange-400 block mt-0.5">Standard Planning Practice</span>
             </div>
             <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-              <span className="text-[10px] text-slate-500 font-mono block uppercase">Quality Standard</span>
-              <span className="text-white font-bold font-mono">ISO 9001:2015</span>
-              <span className="text-[10px] text-purple-400 block mt-0.5">Architectural QA/QC Compliant</span>
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Digital Workflow</span>
+              <span className="text-white font-bold font-mono">3D BIM & Digital Twin</span>
+              <span className="text-[10px] text-purple-400 block mt-0.5">1-Year Client Portal Access</span>
             </div>
           </div>
 

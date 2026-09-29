@@ -28,7 +28,7 @@ export const LegalFaqKnowledgeHub: React.FC<LegalFaqProps> = ({ language }) => {
 
 पक्षकार १ (इंजिनिअर/फर्म):
 श्रीगोंदा सिव्हिल कन्सल्टन्सी / BuildVision Studio, स्टेशन रोड, श्रीगोंदा
-मुख्य अभियंता: Er. Dnyaneshwar Adagale (B.Tech Civil, COA Reg.)
+मुख्य अभियंता: Er. Dnyaneshwar Adagale (B.Tech Civil, Consultant)
 
 पक्षकार २ (क्लायंट/मालक):
 नाव: _____________________________________________
