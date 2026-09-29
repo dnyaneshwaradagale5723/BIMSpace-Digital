@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bim-space-digital.vercel.app/sitemap.xml
