@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Building2,
   Share2,
@@ -15,7 +15,8 @@ import {
   Compass,
   Layers,
   Calculator,
-  Globe
+  Globe,
+  ArrowUp
 } from 'lucide-react';
 import { ThreeModelViewer } from './components/ThreeModelViewer';
 import { FloorPlanViewer } from './components/FloorPlanViewer';
@@ -41,6 +42,25 @@ export default function App() {
   const [language, setLanguage] = useState<Language>('mr');
   const [contactMessageSent, setContactMessageSent] = useState<boolean>(false);
   const [shareSuccess, setShareSuccess] = useState<boolean>(false);
+  const [scrollProgress, setScrollProgress] = useState<number>(0);
+  const [showBackToTop, setShowBackToTop] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollTop;
+      const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrollPercent = windowHeight > 0 ? (totalScroll / windowHeight) * 100 : 0;
+      setScrollProgress(scrollPercent);
+      setShowBackToTop(totalScroll > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleShare = () => {
     if (navigator.clipboard) {
@@ -67,6 +87,16 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-orange-500 selection:text-slate-950 font-sans">
+      {/* Scroll Progress Bar (0 - 100%) */}
+      <div
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-cyan-400 z-50 transition-all duration-150 ease-out shadow-[0_0_12px_rgba(249,115,22,0.8)]"
+        style={{ width: `${scrollProgress}%` }}
+        role="progressbar"
+        aria-valuenow={Math.round(scrollProgress)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      />
+
       {/* 1. Top Enterprise Notice & Multi-Language Bar */}
       <div className="bg-gradient-to-r from-slate-950 via-blue-950/40 to-slate-950 border-b border-orange-500/30 py-1.5 px-4 text-xs">
         <div className="container flex items-center justify-between">
@@ -183,7 +213,7 @@ export default function App() {
       </nav>
 
       {/* Main Page Content */}
-      <main className="flex-1 space-y-16 md:space-y-24 py-8 md:py-12">
+      <main id="main-content" className="flex-1 space-y-16 md:space-y-24 py-8 md:py-12">
         {/* Toggleable Admin View */}
         {isAdminView ? (
           <section className="container">
@@ -437,6 +467,17 @@ export default function App() {
         clientName={activeClient.clientName}
         projectName={activeClient.projectName}
       />
+
+      {/* Floating Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          aria-label="Back to top"
+          className="fixed bottom-6 left-6 z-40 p-3 rounded-full bg-slate-900/90 text-orange-400 border border-orange-500/40 shadow-xl hover:bg-orange-500 hover:text-slate-950 transition-all duration-300 group hover:scale-110 focus:ring-2 focus:ring-orange-400"
+        >
+          <ArrowUp className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+        </button>
+      )}
     </div>
   );
 }
