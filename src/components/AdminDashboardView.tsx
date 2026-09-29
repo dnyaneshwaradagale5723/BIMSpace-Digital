@@ -19,6 +19,7 @@ import {
   Globe
 } from 'lucide-react';
 import { MOCK_LEADS } from '../data/buildVisionData';
+import jsPDF from 'jspdf';
 
 export const AdminDashboardView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'quotations' | 'ai_tools'>('leads');
@@ -72,6 +73,86 @@ export const AdminDashboardView: React.FC = () => {
         );
       }
     }, 900);
+  };
+
+  const handleExportPdf = () => {
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFillColor(15, 23, 42); // slate 900
+    doc.rect(0, 0, 210, 38, 'F');
+    doc.setTextColor(245, 158, 11); // amber 500
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('SHREEGONDA CIVIL CONSULTANCY', 14, 16);
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Er. Dnyaneshwar Adagale (B.Tech Civil Engineering - Consultant)', 14, 23);
+    doc.text('Station Road, Shrigonda, Ahmednagar, Maharashtra 413701', 14, 29);
+    doc.text('Phone: +91 98765 43210 | Email: contact@shreegondacivil.in', 14, 34);
+
+    // Meta details
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'bold');
+    doc.text('PROJECT QUOTATION & SCOPE OF WORK', 14, 48);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Quotation Ref: BV-QT-2026-104', 14, 56);
+    doc.text('Quotation Date: 29 September 2026', 14, 62);
+    doc.text('Client: Er. Rameshwar & Sunita Patil', 14, 68);
+    doc.text('Project: Patil Luxury Villa (Baner Hills, Pune) • 3,850 Sq.Ft', 14, 74);
+    doc.text('Engineering Standards: IS 456 & NBC 2016 Compliant', 14, 80);
+
+    // Table Header
+    doc.setFillColor(241, 245, 249);
+    doc.rect(14, 88, 182, 8, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.text('Item Scope Description', 16, 93);
+    doc.text('Amount (INR)', 165, 93);
+
+    // Items
+    doc.setFont('helvetica', 'normal');
+    let y = 103;
+    const items = [
+      { name: '1. Architectural 2D Plan & Working Drawings (3,850 Sq.Ft)', cost: 'Rs. 46,200.00' },
+      { name: '2. 3D Elevation Modeling & 4K Video Walkthrough (Lumion)', cost: 'Rs. 25,000.00' },
+      { name: '3. Structural Frame Design (ETABS / IS 456) & Granular BOQ', cost: 'Rs. 18,000.00' },
+      { name: '4. Personal VIP Client Project Website (1-Year Active Cloud)', cost: 'INCLUDED' }
+    ];
+
+    items.forEach((item) => {
+      doc.text(item.name, 16, y);
+      doc.text(item.cost, 165, y);
+      y += 8;
+    });
+
+    // Summary Totals
+    doc.line(14, y, 196, y);
+    y += 8;
+    doc.text('Subtotal:', 125, y);
+    doc.text('Rs. 89,200.00', 165, y);
+    y += 6;
+    doc.text('Applicable GST (18%):', 125, y);
+    doc.text('Rs. 16,056.00', 165, y);
+    y += 8;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Grand Total (All-Inclusive):', 110, y);
+    doc.text('Rs. 1,05,256.00', 165, y);
+
+    // Footer Terms
+    y += 18;
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Terms & Conditions:', 14, y);
+    doc.text('1. Payment Schedule: 40% Advance on Concept Approval, 40% on Working Drawings, 20% on Completion.', 14, y + 5);
+    doc.text('2. Revision Scope: Up to 3 minor plan revisions included without surcharge.', 14, y + 10);
+    doc.text('3. Authorized Signatory: Er. Dnyaneshwar Adagale, B.Tech Civil Engineering.', 14, y + 15);
+
+    doc.save('ShreeGonda_Civil_Quotation_Patil_Villa_2026.pdf');
   };
 
   return (
@@ -265,10 +346,10 @@ export const AdminDashboardView: React.FC = () => {
               <p className="text-xs text-slate-400">Generate professional, itemized PDF quotations with binding engineering terms.</p>
             </div>
             <button
-              onClick={() => alert('Quotation PDF Exported: "BuildVision-Quote-Patil-Villa-2026.pdf" with tax calculations and payment milestones.')}
+              onClick={handleExportPdf}
               className="btn-gold text-xs py-2 px-4"
             >
-              <Download className="w-4 h-4" /> Export Professional PDF Quote
+              <Download className="w-4 h-4" /> Export Professional PDF Quote (.PDF)
             </button>
           </div>
 

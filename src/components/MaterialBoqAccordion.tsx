@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Layers, CheckCircle2, FileSpreadsheet, ShieldCheck, DollarSign } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import { BOQ_CATEGORIES } from '../data/projectData';
 
 export const MaterialBoqAccordion: React.FC = () => {
@@ -12,6 +13,41 @@ export const MaterialBoqAccordion: React.FC = () => {
   };
 
   const totalProjectBudget = BOQ_CATEGORIES.reduce((acc, cat) => acc + cat.subtotal, 0);
+
+  const handleExportExcel = () => {
+    const rows: any[] = [];
+    rows.push(['श्रीगोंदा सिव्हिल कन्सल्टन्सी / SHREEGONDA CIVIL CONSULTANCY']);
+    rows.push(['BILL OF QUANTITIES (BOQ) & MATERIAL ESTIMATION REPORT']);
+    rows.push(['Project: Patil Luxury Villa (Baner Hills, Pune) • 3,850 Sq.Ft']);
+    rows.push(['Date: 29 September 2026 • Verified Standard: IS 456 & NBC 2016']);
+    rows.push([]);
+    rows.push(['Sr. No.', 'Category', 'Item Description', 'Quality Standard & Grade', 'Quantity', 'Unit', 'Rate (INR)', 'Amount (INR)']);
+
+    let sr = 1;
+    BOQ_CATEGORIES.forEach((cat) => {
+      cat.items.forEach((item) => {
+        rows.push([
+          sr++,
+          cat.category,
+          item.itemName,
+          item.specGrade,
+          item.quantity,
+          item.unit,
+          item.rate,
+          item.amount
+        ]);
+      });
+      rows.push(['', '', '', `SUBTOTAL - ${cat.category.toUpperCase()}`, '', '', '', cat.subtotal]);
+    });
+
+    rows.push([]);
+    rows.push(['', '', '', 'GRAND TOTAL PROJECT ESTIMATE', '', '', '', totalProjectBudget]);
+
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'BOQ_Estimate');
+    XLSX.writeFile(workbook, 'ShreeGonda_Civil_BOQ_Estimation_2026.xlsx');
+  };
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -43,12 +79,12 @@ export const MaterialBoqAccordion: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => alert('Exporting full Bill of Quantities spreadsheet (.XLSX) with formula linkages...')}
+            onClick={handleExportExcel}
             className="btn-gold text-xs py-2 px-3"
             title="Download Excel BOQ"
           >
             <FileSpreadsheet className="w-4 h-4" />
-            Export BOQ
+            Export BOQ (.XLSX)
           </button>
         </div>
       </div>
