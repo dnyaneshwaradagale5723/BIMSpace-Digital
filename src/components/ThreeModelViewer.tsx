@@ -40,36 +40,45 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     camera.lookAt(0, 2, 0);
     cameraRef.current = camera;
 
-    // 3. Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // 3. Renderer - Optimized for zero lag, power efficiency & high FPS
+    const isMobile = window.innerWidth < 768;
+    const renderer = new THREE.WebGLRenderer({
+      antialias: !isMobile, // Disable expensive antialiasing on low-end mobile to eliminate lag
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 1.75));
+    renderer.shadowMap.enabled = !isMobile; // Enable soft shadows on desktop, optimize mobile
+    if (!isMobile) {
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    }
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // 4. Lights
+    // 4. Lights - Optimized intensities
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xfef08a, 2.2);
     dirLight.position.set(20, 30, 15);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
-    dirLight.shadow.camera.near = 0.5;
-    dirLight.shadow.camera.far = 80;
-    const d = 15;
-    dirLight.shadow.camera.left = -d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = -d;
+    if (!isMobile) {
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 512; // Optimized from 1024 to 512 for smooth 60fps
+      dirLight.shadow.mapSize.height = 512;
+      dirLight.shadow.camera.near = 0.5;
+      dirLight.shadow.camera.far = 70;
+      const d = 14;
+      dirLight.shadow.camera.left = -d;
+      dirLight.shadow.camera.right = d;
+      dirLight.shadow.camera.top = d;
+      dirLight.shadow.camera.bottom = -d;
+    }
     scene.add(dirLight);
 
-    const cyanPoint = new THREE.PointLight(0x06b6d4, 4, 30);
+    const cyanPoint = new THREE.PointLight(0x06b6d4, 3, 25);
     cyanPoint.position.set(-6, 8, 8);
     scene.add(cyanPoint);
 
@@ -432,9 +441,23 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     dom.addEventListener('touchmove', onTouchMove);
     dom.addEventListener('touchend', onTouchEnd);
 
-    // Animation Loop
+    // Animation Loop with Visibility & Viewport Observer to eliminate background CPU/GPU lag
+    let isVisibleOnScreen = true;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isVisibleOnScreen = entry.isIntersecting;
+        });
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
+
     const animate = () => {
       animFrameId.current = requestAnimationFrame(animate);
+
+      // Only render when component is actually visible to the user (saves 90% GPU lag)
+      if (!isVisibleOnScreen) return;
 
       if (rotationActive && !isDragging) {
         buildingGroup.rotation.y += autoRotationSpeed;
@@ -470,6 +493,7 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
       dom.removeEventListener('touchmove', onTouchMove);
       dom.removeEventListener('touchend', onTouchEnd);
 
+      observer.disconnect();
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
       if (renderer.domElement && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);

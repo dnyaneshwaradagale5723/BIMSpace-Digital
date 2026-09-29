@@ -8,4 +8,19 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  build: {
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules/three')) {
+            return 'three-vendor';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'lucide-vendor';
+          }
+        }
+      }
+    }
+  }
 })
