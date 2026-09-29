@@ -25,9 +25,25 @@ export const ComprehensiveLeadForm: React.FC = () => {
 
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [agreePrivacy, setAgreePrivacy] = useState<boolean>(true);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+
+    // 10-digit Indian Mobile Validation
+    const cleanPhone = formData.mobile.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
+      setFormError('कृपया वैध १० अंकी मोबाईल नंबर टाका (Please enter a valid 10-digit mobile number).');
+      return;
+    }
+
+    if (!agreePrivacy) {
+      setFormError('कृपया पुढे जाण्यापूर्वी गोपनीयता अटी (Privacy Policy) मान्य करा.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     const generatedId = `BV-LEAD-2026-${Math.floor(100 + Math.random() * 900)}`;
@@ -293,6 +309,29 @@ export const ComprehensiveLeadForm: React.FC = () => {
               >
                 Browse Files
               </button>
+            </div>
+
+            {formError && (
+              <div className="p-3 bg-red-950/60 border border-red-500/50 rounded-xl text-red-300 text-xs flex items-center gap-2">
+                <span>⚠️</span>
+                <span>{formError}</span>
+              </div>
+            )}
+
+            {/* Privacy Policy Checkbox & reCAPTCHA */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs">
+              <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
+                <input
+                  type="checkbox"
+                  checked={agreePrivacy}
+                  onChange={(e) => setAgreePrivacy(e.target.checked)}
+                  className="rounded accent-cyan-500 w-4 h-4 cursor-pointer"
+                />
+                <span>मी गोपनीयता अटी व कायदेशीर नियम (Privacy Policy & T&C) मान्य करत आहे.</span>
+              </label>
+              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5 self-start sm:self-auto">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Google reCAPTCHA v3 Protected
+              </span>
             </div>
 
             <button
