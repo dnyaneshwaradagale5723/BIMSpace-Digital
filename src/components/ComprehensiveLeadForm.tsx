@@ -50,6 +50,24 @@ export const ComprehensiveLeadForm: React.FC = () => {
     setSubmittedId(generatedId);
     setIsSubmitting(false);
 
+    // Save lead persistently to localStorage
+    try {
+      const existingLeads = JSON.parse(localStorage.getItem('bv_leads') || '[]');
+      const newLead = {
+        id: generatedId,
+        name: formData.name,
+        mobile: formData.mobile,
+        email: formData.email || '',
+        city: formData.city,
+        projectType: formData.projectType,
+        budget: formData.budget,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('bv_leads', JSON.stringify([newLead, ...existingLeads]));
+    } catch (e) {
+      console.warn('LocalStorage lead persistence failed:', e);
+    }
+
     // Direct WhatsApp Redirection
     const waText = encodeURIComponent(
       `*नमस्कार इंजिनिअर साहेब (श्रीगोंदा सिव्हिल कन्सल्टन्सी)*\n\n` +

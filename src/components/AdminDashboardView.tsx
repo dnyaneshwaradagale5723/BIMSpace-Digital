@@ -22,7 +22,31 @@ import { MOCK_LEADS } from '../data/buildVisionData';
 
 export const AdminDashboardView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'leads' | 'projects' | 'quotations' | 'ai_tools'>('leads');
-  const [leadsList, setLeadsList] = useState(MOCK_LEADS);
+  const [leadsList, setLeadsList] = useState(() => {
+    try {
+      const stored = localStorage.getItem('bv_leads');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Format to match lead schema
+        const formatted = parsed.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          phone: item.mobile,
+          email: item.email || 'N/A',
+          city: item.city,
+          projectType: item.projectType,
+          budget: item.budget,
+          status: 'New Inquiry',
+          date: item.timestamp ? new Date(item.timestamp).toLocaleDateString('en-IN') : 'Today',
+          score: 95
+        }));
+        return [...formatted, ...MOCK_LEADS];
+      }
+    } catch (e) {
+      console.warn('Failed reading stored leads:', e);
+    }
+    return MOCK_LEADS;
+  });
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
 
   // AI Assistant states
