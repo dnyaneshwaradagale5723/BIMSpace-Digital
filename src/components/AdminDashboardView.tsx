@@ -287,7 +287,7 @@ export const AdminDashboardView: React.FC = () => {
               <div className="text-right">
                 <span className="text-slate-500 block">ARCHITECTURAL CONSULTANT:</span>
                 <span className="text-amber-400 font-bold block">BuildVision Studio</span>
-                <span className="text-slate-400">Ar. Dnyaneshwar Adagale (COA/2023/CA-88491)</span>
+                <span className="text-slate-400">Er. Dnyaneshwar Adagale (B.Tech Civil - Consultant)</span>
               </div>
             </div>
 
@@ -308,9 +308,19 @@ export const AdminDashboardView: React.FC = () => {
                 <span>4. Personal VIP Client Project Website (1-Year Active Cloud)</span>
                 <span>INCLUDED IN PACKAGE</span>
               </div>
-              <div className="flex justify-between py-2 border-t border-slate-700 text-sm font-bold text-white mt-2">
-                <span>Total Quotation Amount (+ 18% GST Applicable)</span>
-                <span className="text-amber-400">₹89,200.00</span>
+              <div className="pt-2 border-t border-slate-800 space-y-1 mt-2 text-xs">
+                <div className="flex justify-between text-slate-400">
+                  <span>Subtotal</span>
+                  <span>₹89,200.00</span>
+                </div>
+                <div className="flex justify-between text-slate-400">
+                  <span>Applicable GST (18%)</span>
+                  <span>₹16,056.00</span>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-slate-700 text-sm font-bold text-white">
+                  <span>Grand Total (All-Inclusive)</span>
+                  <span className="text-amber-400">₹1,05,256.00</span>
+                </div>
               </div>
             </div>
           </div>

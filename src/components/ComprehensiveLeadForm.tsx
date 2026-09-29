@@ -25,7 +25,7 @@ export const ComprehensiveLeadForm: React.FC = () => {
 
   const [submittedId, setSubmittedId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [agreePrivacy, setAgreePrivacy] = useState<boolean>(true);
+  const [agreePrivacy, setAgreePrivacy] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
