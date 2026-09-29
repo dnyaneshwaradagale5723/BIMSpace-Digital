@@ -30,11 +30,24 @@ export const ComprehensiveLeadForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      const generatedId = `BV-LEAD-2026-${Math.floor(100 + Math.random() * 900)}`;
-      setSubmittedId(generatedId);
-      setIsSubmitting(false);
-    }, 900);
+    const generatedId = `BV-LEAD-2026-${Math.floor(100 + Math.random() * 900)}`;
+    setSubmittedId(generatedId);
+    setIsSubmitting(false);
+
+    // Direct WhatsApp Redirection
+    const waText = encodeURIComponent(
+      `*नमस्कार इंजिनिअर साहेब (श्रीगोंदा सिव्हिल कन्सल्टन्सी)*\n\n` +
+      `मला माझ्या प्रोजेक्टसाठी 3D Digital Twin & 2D प्लॅनिंगचे कोटेशन हवे आहे:\n` +
+      `• *नाव:* ${formData.name || 'Client'}\n` +
+      `• *मोबाईल:* ${formData.mobile || 'N/A'}\n` +
+      `• *ठिकाण:* ${formData.city || 'Shrigonda / Ahmednagar'}\n` +
+      `• *प्रकल्प प्रकार:* ${formData.projectType}\n` +
+      `• *प्लॉट / बिल्ट-अप:* ${formData.plotSize || formData.builtUpArea || 'Custom'}\n` +
+      `• *अंदाजपत्रक:* ${formData.budget}\n` +
+      `• *Reference ID:* ${generatedId}\n\n` +
+      `कृपया 3D मॉडेल डेमो व सल्ला द्या.`
+    );
+    window.open(`https://wa.me/919876543210?text=${waText}`, '_blank');
   };
 
   return (
@@ -43,10 +56,10 @@ export const ComprehensiveLeadForm: React.FC = () => {
         <div className="max-w-3xl mx-auto mb-8 text-center">
           <span className="badge-cyan text-xs mb-2">BuildVision Studio Project Onboarding</span>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-            Request an Architectural & Civil Engineering Quotation
+            Claim Your 3D AI Digital Twin & Engineering Quotation
           </h2>
           <p className="text-slate-400 text-sm mt-2">
-            Fill in your plot parameters to instantly calculate scope, 2D/3D deliverables, and personal project website deployment.
+            Fill in your basic project parameters for instant scope calculation, 2D/3D deliverables, and personal 1-year project website.
           </p>
         </div>
 
@@ -63,14 +76,24 @@ export const ComprehensiveLeadForm: React.FC = () => {
               {submittedId}
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Our lead architectural engineer will examine your plot specifications and contact you on WhatsApp / Phone within 4 working hours with initial concept guidance.
+              WhatsApp चॅट विंडो थेट उघडली गेली आहे. आमचे मुख्य अभियंता तुमच्याशी 4 तासांत संपर्क साधतील.
             </p>
-            <button
-              onClick={() => setSubmittedId(null)}
-              className="btn-secondary text-xs mt-4"
-            >
-              Submit Another Inquiry
-            </button>
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <a
+                href={`https://wa.me/919876543210?text=Hello%20Er.%20Dnyaneshwar,%20Reference%20ID:%20${submittedId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-gold text-xs py-2 px-4"
+              >
+                Open WhatsApp Chat
+              </a>
+              <button
+                onClick={() => setSubmittedId(null)}
+                className="btn-secondary text-xs py-2 px-4"
+              >
+                Submit Another Inquiry
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6">
@@ -275,16 +298,23 @@ export const ComprehensiveLeadForm: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary w-full py-3.5 justify-center text-sm font-bold tracking-wide"
+              className="btn-gold w-full py-4 justify-center text-sm md:text-base font-extrabold tracking-wide shadow-xl shadow-amber-500/20 hover:scale-[1.01] transition-transform"
             >
               {isSubmitting ? (
                 <span>Generating Lead Reference...</span>
               ) : (
                 <span className="flex items-center gap-2">
-                  <Send className="w-4 h-4" /> Submit Detailed Engineering Inquiry
+                  <Sparkles className="w-5 h-5 text-slate-950" /> Claim My AI Digital Twin & Get Free 3D Demo Link
                 </span>
               )}
             </button>
+
+            {/* Trust Badge Below Form */}
+            <div className="pt-2 text-center">
+              <p className="text-xs text-slate-400 font-mono flex items-center justify-center gap-1.5">
+                <span>🔒</span> 100% Privacy Guaranteed. Your CAD drawings and site details remain secure.
+              </p>
+            </div>
           </form>
         )}
       </div>

@@ -626,9 +626,24 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     const first = groupRef.current.getObjectByName('first');
     const roof = groupRef.current.getObjectByName('roof');
 
-    if (ground) ground.visible = activeFloor === 'all' || activeFloor === 'ground';
-    if (first) first.visible = activeFloor === 'all' || activeFloor === 'first';
-    if (roof) roof.visible = activeFloor === 'all' || activeFloor === 'roof';
+    // Layer filter: 'all' shows complete villa, or isolates specific floor cleanly
+    if (activeFloor === 'all') {
+      if (ground) ground.visible = true;
+      if (first) first.visible = true;
+      if (roof) roof.visible = true;
+    } else if (activeFloor === 'ground') {
+      if (ground) ground.visible = true;
+      if (first) first.visible = false;
+      if (roof) roof.visible = false;
+    } else if (activeFloor === 'first') {
+      if (ground) ground.visible = true;
+      if (first) first.visible = true;
+      if (roof) roof.visible = false;
+    } else if (activeFloor === 'roof') {
+      if (ground) ground.visible = true;
+      if (first) first.visible = true;
+      if (roof) roof.visible = true;
+    }
   }, [activeFloor]);
 
   const resetCamera = () => {
