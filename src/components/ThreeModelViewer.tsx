@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { RotateCw, Compass, Layers, Eye, Maximize2, Sparkles, Building2, Sun } from 'lucide-react';
+import { RotateCw, Compass, Layers, Eye, Maximize2, Sparkles, Building2, Sun, Sunrise, Sunset, Moon, CloudSun, Clock } from 'lucide-react';
 
 interface ThreeModelViewerProps {
   onStatusChange?: (status: string) => void;
@@ -11,7 +11,7 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
   const [wireframe, setWireframe] = useState<boolean>(false);
   const [rotationActive, setRotationActive] = useState<boolean>(true);
   const [activeFloor, setActiveFloor] = useState<'all' | 'ground' | 'first' | 'roof'>('all');
-  const [sunlightMode, setSunlightMode] = useState<'day' | 'golden' | 'night'>('golden');
+  const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night' | 'golden'>('afternoon');
   const [isHovered, setIsHovered] = useState<boolean>(false);
 
   // References to three objects for interaction
@@ -101,74 +101,190 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     groupRef.current = buildingGroup;
     scene.add(buildingGroup);
 
-    // Materials
-    const concreteMat = new THREE.MeshStandardMaterial({
-      color: 0xe2e8f0,
+    // Natural Architectural & Landscape Materials
+    // 1. Warm Italian Stucco / Plaster (Natural Ivory Cream, not plain grey)
+    const wallCreamMat = new THREE.MeshStandardMaterial({
+      color: 0xfdfaf5,
+      roughness: 0.55,
+      metalness: 0.05
+    });
+
+    // 2. Terracotta / Clay Brick Accent Wall
+    const terracottaMat = new THREE.MeshStandardMaterial({
+      color: 0xc25e3d,
+      roughness: 0.75,
+      metalness: 0.08
+    });
+
+    // 3. Natural Teakwood Louvers & Decking
+    const teakWoodMat = new THREE.MeshStandardMaterial({
+      color: 0x92512a,
       roughness: 0.45,
-      metalness: 0.1
+      metalness: 0.12
     });
 
-    const darkAccentMat = new THREE.MeshStandardMaterial({
-      color: 0x1e293b,
-      roughness: 0.3,
-      metalness: 0.4
+    // 4. Sleek Charcoal Slate / Granite Beams & Fascia
+    const darkSlateMat = new THREE.MeshStandardMaterial({
+      color: 0x222a38,
+      roughness: 0.35,
+      metalness: 0.3
     });
 
-    const woodLouversMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
-      roughness: 0.6,
-      metalness: 0.1
-    });
-
-    const glassMat = new THREE.MeshPhysicalMaterial({
+    // 5. Crystal Reflective Architectural Glass (Emerald-Cyan tint like real solar glass)
+    const architecturalGlassMat = new THREE.MeshPhysicalMaterial({
       color: 0x38bdf8,
-      transmission: 0.85,
-      opacity: 0.65,
+      transmission: 0.78,
+      opacity: 0.72,
       transparent: true,
-      roughness: 0.1,
-      ior: 1.5,
-      reflectivity: 0.9
+      roughness: 0.08,
+      ior: 1.52,
+      reflectivity: 0.95
     });
 
-    const cyanEmissiveMat = new THREE.MeshStandardMaterial({
-      color: 0x06b6d4,
-      emissive: 0x06b6d4,
-      emissiveIntensity: 0.8,
-      roughness: 0.2
+    // 6. Warm Interior Glow (Lit Rooms)
+    const interiorGlowMat = new THREE.MeshStandardMaterial({
+      color: 0xffedd5,
+      emissive: 0xfbbf24,
+      emissiveIntensity: 0.6,
+      roughness: 0.3
     });
+
+    // 7. Manicured Natural Green Lawn & Garden Grass
+    const lawnGrassMat = new THREE.MeshStandardMaterial({
+      color: 0x2d6a4f,
+      roughness: 0.85,
+      metalness: 0.02
+    });
+
+    // 8. Stone Paver Driveway & Footpath
+    const paverStoneMat = new THREE.MeshStandardMaterial({
+      color: 0x94a3b8,
+      roughness: 0.7,
+      metalness: 0.1
+    });
+
+    // 9. Water Feature (Swimming Pool / Reflection Pond)
+    const poolWaterMat = new THREE.MeshStandardMaterial({
+      color: 0x0ea5e9,
+      roughness: 0.1,
+      metalness: 0.8,
+      opacity: 0.85,
+      transparent: true
+    });
+
+    // 10. Natural Foliage Green (Trees & Shrubs)
+    const foliageMat = new THREE.MeshStandardMaterial({
+      color: 0x1b4332,
+      roughness: 0.6,
+      metalness: 0.05
+    });
+    const trunkMat = new THREE.MeshStandardMaterial({
+      color: 0x582f0e,
+      roughness: 0.85
+    });
+
+    // --- ENVIRONMENT: Natural Landscaping (Grass Lawn, Driveway, Pool, Trees) ---
+    // Manicured Grass Base
+    const grassPlot = new THREE.Mesh(new THREE.BoxGeometry(22, 0.25, 20), lawnGrassMat);
+    grassPlot.position.set(0, -0.05, 0);
+    grassPlot.receiveShadow = true;
+    scene.add(grassPlot);
+
+    // Stone Entry Pathway / Driveway
+    const driveway = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.28, 7.5), paverStoneMat);
+    driveway.position.set(4.8, -0.02, 6.2);
+    driveway.receiveShadow = true;
+    scene.add(driveway);
+
+    // Luxury Swimming Pool with water glow
+    const poolBorder = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.35, 4.4), darkSlateMat);
+    poolBorder.position.set(-6.5, 0.05, 4.5);
+    scene.add(poolBorder);
+
+    const poolWater = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.38, 3.8), poolWaterMat);
+    poolWater.position.set(-6.5, 0.08, 4.5);
+    scene.add(poolWater);
+
+    // Natural Trees around the Villa
+    const createTree = (x: number, z: number, scale = 1) => {
+      const treeGroup = new THREE.Group();
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18 * scale, 0.24 * scale, 2.2 * scale, 8), trunkMat);
+      trunk.position.y = (1.1 * scale);
+      trunk.castShadow = true;
+      treeGroup.add(trunk);
+
+      const crown1 = new THREE.Mesh(new THREE.ConeGeometry(1.4 * scale, 2.8 * scale, 8), foliageMat);
+      crown1.position.y = (2.6 * scale);
+      crown1.castShadow = true;
+      treeGroup.add(crown1);
+
+      const crown2 = new THREE.Mesh(new THREE.ConeGeometry(1.1 * scale, 2.2 * scale, 8), new THREE.MeshStandardMaterial({ color: 0x40916c, roughness: 0.6 }));
+      crown2.position.y = (3.4 * scale);
+      crown2.castShadow = true;
+      treeGroup.add(crown2);
+
+      treeGroup.position.set(x, 0, z);
+      scene.add(treeGroup);
+    };
+
+    createTree(-8.5, -6.5, 1.2);
+    createTree(-9.2, -2.5, 0.95);
+    createTree(8.8, -6.0, 1.1);
+    createTree(9.0, 1.5, 0.85);
+    createTree(-7.5, 8.5, 0.9);
 
     // --- LEVEL 0: Ground Floor ---
     const gfGroup = new THREE.Group();
     gfGroup.name = 'ground';
 
-    // Base slab
-    const gfSlab = new THREE.Mesh(new THREE.BoxGeometry(10.5, 0.4, 8.5), concreteMat);
+    // Base Plinth Slab (Natural stone edge)
+    const gfSlab = new THREE.Mesh(new THREE.BoxGeometry(10.8, 0.45, 8.8), darkSlateMat);
     gfSlab.position.y = 0.2;
     gfSlab.receiveShadow = true;
     gfSlab.castShadow = true;
     gfGroup.add(gfSlab);
 
-    // Ground walls (L-shaped modern layout)
-    const gfWallMain = new THREE.Mesh(new THREE.BoxGeometry(6.5, 3.2, 7.5), concreteMat);
+    // Ground walls (L-shaped modern layout) - Warm Ivory Stucco & Terracotta Feature Wall
+    const gfWallMain = new THREE.Mesh(new THREE.BoxGeometry(6.5, 3.2, 7.5), wallCreamMat);
     gfWallMain.position.set(-1.8, 1.8, 0);
     gfWallMain.castShadow = true;
     gfWallMain.receiveShadow = true;
     gfGroup.add(gfWallMain);
 
-    // Double-height living wing with large glass façade
-    const gfGlassWing = new THREE.Mesh(new THREE.BoxGeometry(3.6, 3.2, 6.5), glassMat);
+    // Terracotta Cladding Accent on Ground Wing
+    const terracottaAccent = new THREE.Mesh(new THREE.BoxGeometry(0.15, 3.2, 3.5), terracottaMat);
+    terracottaAccent.position.set(-5.1, 1.8, 1.8);
+    terracottaAccent.castShadow = true;
+    gfGroup.add(terracottaAccent);
+
+    // Double-height living wing with large architectural glass façade & Warm Interior Lighting
+    const gfGlassWing = new THREE.Mesh(new THREE.BoxGeometry(3.6, 3.2, 6.5), architecturalGlassMat);
     gfGlassWing.position.set(2.8, 1.8, 0.4);
     gfGroup.add(gfGlassWing);
 
-    // Entrance cantilever portico
-    const porticoRoof = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.3, 3.8), darkAccentMat);
+    // Warm Interior Lit Core (Visible through glass windows)
+    const gfInteriorCore = new THREE.Mesh(new THREE.BoxGeometry(2.8, 2.6, 5.0), interiorGlowMat);
+    gfInteriorCore.position.set(2.7, 1.8, 0.4);
+    gfGroup.add(gfInteriorCore);
+
+    // Entrance cantilever portico with Teak Wood Under-ceiling
+    const porticoRoof = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.35, 3.8), darkSlateMat);
     porticoRoof.position.set(2.5, 3.2, 4.4);
     porticoRoof.castShadow = true;
     gfGroup.add(porticoRoof);
 
-    // Portico Pillar (Illuminated 3D Smart Pillar)
-    const pillarGeo = new THREE.CylinderGeometry(0.18, 0.18, 3.2, 16);
-    const pillarMesh = new THREE.Mesh(pillarGeo, cyanEmissiveMat);
+    const porticoCeilingWood = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.08, 3.6), teakWoodMat);
+    porticoCeilingWood.position.set(2.5, 3.0, 4.4);
+    gfGroup.add(porticoCeilingWood);
+
+    // Portico Pillar (Illuminated 3D Smart Pillar with Warm Amber Glow)
+    const pillarGeo = new THREE.CylinderGeometry(0.2, 0.2, 3.2, 16);
+    const pillarMesh = new THREE.Mesh(pillarGeo, new THREE.MeshStandardMaterial({
+      color: 0xf59e0b,
+      emissive: 0xd97706,
+      emissiveIntensity: 0.7,
+      roughness: 0.2
+    }));
     pillarMesh.position.set(4.5, 1.6, 5.8);
     gfGroup.add(pillarMesh);
 
@@ -178,34 +294,38 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     const ffGroup = new THREE.Group();
     ffGroup.name = 'first';
 
-    // Mid-level slab cantilevered
-    const ffSlab = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.4, 9.2), darkAccentMat);
+    // Mid-level slab cantilevered (Charcoal Granite with Teak Banding)
+    const ffSlab = new THREE.Mesh(new THREE.BoxGeometry(11.2, 0.4, 9.2), darkSlateMat);
     ffSlab.position.set(0.4, 3.6, 0.2);
     ffSlab.castShadow = true;
     ffSlab.receiveShadow = true;
     ffGroup.add(ffSlab);
 
-    // Master Suite volume (cantilevered floating box)
-    const ffMaster = new THREE.Mesh(new THREE.BoxGeometry(5.8, 3.0, 7.2), concreteMat);
+    // Master Suite volume (cantilevered floating box in Warm Ivory Plaster)
+    const ffMaster = new THREE.Mesh(new THREE.BoxGeometry(5.8, 3.0, 7.2), wallCreamMat);
     ffMaster.position.set(2.2, 5.1, 0.8);
     ffMaster.castShadow = true;
     ffMaster.receiveShadow = true;
     ffGroup.add(ffMaster);
 
-    // Wooden decorative louvers on master facade
+    // Wooden decorative louvers on master facade (Real Natural Teak Wood)
     for (let i = 0; i < 9; i++) {
-      const louver = new THREE.Mesh(new THREE.BoxGeometry(0.08, 2.7, 0.25), woodLouversMat);
+      const louver = new THREE.Mesh(new THREE.BoxGeometry(0.1, 2.7, 0.28), teakWoodMat);
       louver.position.set(5.15, 5.1, -1.8 + i * 0.45);
       ffGroup.add(louver);
     }
 
-    // Bedroom 2 / Lounge glass ribbon
-    const ffGlass = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.8, 5.6), glassMat);
+    // Bedroom 2 / Lounge glass ribbon & interior warm ambiance
+    const ffGlass = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2.8, 5.6), architecturalGlassMat);
     ffGlass.position.set(-2.5, 5.0, 0);
     ffGroup.add(ffGlass);
 
-    // Balcony with glass railing
-    const balconyRail = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.9, 0.1), glassMat);
+    const ffInteriorLounge = new THREE.Mesh(new THREE.BoxGeometry(3.6, 2.3, 4.8), interiorGlowMat);
+    ffInteriorLounge.position.set(-2.5, 5.0, 0);
+    ffGroup.add(ffInteriorLounge);
+
+    // Balcony with tinted safety glass railing
+    const balconyRail = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.9, 0.1), architecturalGlassMat);
     balconyRail.position.set(2.2, 4.1, 4.45);
     ffGroup.add(balconyRail);
 
@@ -215,14 +335,14 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     const roofGroup = new THREE.Group();
     roofGroup.name = 'roof';
 
-    const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.3, 8.0), darkAccentMat);
+    const roofSlab = new THREE.Mesh(new THREE.BoxGeometry(10.0, 0.3, 8.0), darkSlateMat);
     roofSlab.position.set(0.6, 6.75, 0.4);
     roofSlab.castShadow = true;
     roofGroup.add(roofSlab);
 
     // Solar Pergola structure
     for (let j = 0; j < 5; j++) {
-      const pergolaBeam = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 4.5), darkAccentMat);
+      const pergolaBeam = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.18, 4.5), darkSlateMat);
       pergolaBeam.position.set(1.5 + j * 0.7, 7.8, -0.5);
       roofGroup.add(pergolaBeam);
     }
@@ -236,7 +356,7 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     roofGroup.add(solarGlass);
 
     // Rooftop Stairhead Cabin
-    const stairCabin = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 2.8), concreteMat);
+    const stairCabin = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.2, 2.8), wallCreamMat);
     stairCabin.position.set(-2.2, 7.85, -0.8);
     stairCabin.castShadow = true;
     roofGroup.add(stairCabin);
@@ -372,29 +492,80 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     });
   }, [wireframe]);
 
-  // Effect for Sunlight Mode
+  // Effect for 24-Hour Realistic Natural Time-of-Day Modes
   useEffect(() => {
-    if (!lightsRef.current || !sceneRef.current) return;
+    if (!lightsRef.current || !sceneRef.current || !rendererRef.current) return;
     const { dir, ambient, point } = lightsRef.current;
+    const scene = sceneRef.current;
+    const renderer = rendererRef.current;
 
-    if (sunlightMode === 'day') {
-      dir.color.setHex(0xffffff);
-      dir.intensity = 2.4;
-      ambient.intensity = 0.9;
-      point.intensity = 2.0;
-    } else if (sunlightMode === 'golden') {
-      dir.color.setHex(0xf59e0b);
-      dir.intensity = 2.8;
-      ambient.intensity = 0.65;
-      point.intensity = 4.5;
-    } else {
-      // Night / Twilight
-      dir.color.setHex(0x1e3a8a);
-      dir.intensity = 0.8;
-      ambient.intensity = 0.3;
-      point.intensity = 7.0;
+    switch (timeOfDay) {
+      case 'morning': // 07:30 AM Sunrise - Crisp warm amber ray from east, soft blue ambient
+        scene.background = new THREE.Color(0x0f172a); // Dawn blue-slate
+        scene.fog = new THREE.FogExp2(0x0f172a, 0.025);
+        dir.position.set(-25, 14, 18); // Low east sun
+        dir.color.setHex(0xfde68a); // Pale warm amber
+        dir.intensity = 2.6;
+        ambient.color.setHex(0xdbeafe); // Soft morning blue
+        ambient.intensity = 0.85;
+        point.color.setHex(0xfbbf24);
+        point.intensity = 2.0;
+        renderer.toneMappingExposure = 1.15;
+        break;
+
+      case 'afternoon': // 01:30 PM Bright Natural Sunlight - Clear daylight, sharp contrast, neutral white
+        scene.background = new THREE.Color(0x020617);
+        scene.fog = new THREE.FogExp2(0x020617, 0.02);
+        dir.position.set(12, 35, 12); // High noon sun
+        dir.color.setHex(0xffffff); // Pure white sunlight
+        dir.intensity = 3.2;
+        ambient.color.setHex(0xf8fafc);
+        ambient.intensity = 1.0;
+        point.color.setHex(0x38bdf8);
+        point.intensity = 1.5;
+        renderer.toneMappingExposure = 1.25;
+        break;
+
+      case 'golden': // 05:45 PM Golden Hour - Deep honey gold, long dramatic shadows
+        scene.background = new THREE.Color(0x1a0f0a); // Warm sunset dusk
+        scene.fog = new THREE.FogExp2(0x1a0f0a, 0.028);
+        dir.position.set(28, 9, -15); // Low west sun
+        dir.color.setHex(0xf59e0b); // Rich warm amber gold
+        dir.intensity = 3.5;
+        ambient.color.setHex(0xfed7aa);
+        ambient.intensity = 0.75;
+        point.color.setHex(0xf97316);
+        point.intensity = 3.5;
+        renderer.toneMappingExposure = 1.2;
+        break;
+
+      case 'evening': // 07:15 PM Sunset / Blue Hour - Purple/deep blue sky, interior lights blazing
+        scene.background = new THREE.Color(0x0b132b);
+        scene.fog = new THREE.FogExp2(0x0b132b, 0.035);
+        dir.position.set(20, 4, -20);
+        dir.color.setHex(0xec4899); // Magenta-orange sunset fringe
+        dir.intensity = 1.4;
+        ambient.color.setHex(0x1e3a8a);
+        ambient.intensity = 0.55;
+        point.color.setHex(0xf59e0b); // Warm room chandeliers glowing
+        point.intensity = 5.5;
+        renderer.toneMappingExposure = 1.05;
+        break;
+
+      case 'night': // 10:30 PM Midnight Architecture - Moonlight with warm luxury architectural spot illumination
+        scene.background = new THREE.Color(0x020617);
+        scene.fog = new THREE.FogExp2(0x020617, 0.038);
+        dir.position.set(-15, 22, -18);
+        dir.color.setHex(0x38bdf8); // Cool moonlight
+        dir.intensity = 0.9;
+        ambient.color.setHex(0x0f172a);
+        ambient.intensity = 0.35;
+        point.color.setHex(0xfbbf24); // Warm indoor villas & pool illumination
+        point.intensity = 7.5;
+        renderer.toneMappingExposure = 0.95;
+        break;
     }
-  }, [sunlightMode]);
+  }, [timeOfDay]);
 
   // Effect for Floor Separation / Isolate
   useEffect(() => {
@@ -444,8 +615,40 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
         <span className="font-mono text-[11px] text-cyan-300">N 18°33' E 73°47'</span>
       </div>
 
+      {/* 24-Hour Natural Time of Day Selector */}
+      <div className="absolute top-16 left-4 z-20 flex flex-wrap items-center gap-1.5 p-1 bg-slate-950/85 backdrop-blur-xl border border-slate-800 rounded-xl shadow-xl">
+        <span className="text-[10px] text-slate-400 font-mono px-2 hidden sm:flex items-center gap-1">
+          <Clock className="w-3 h-3 text-amber-400" /> Time:
+        </span>
+        {[
+          { key: 'morning', label: 'सकाळ (Morning)', icon: Sunrise, color: 'text-amber-300' },
+          { key: 'afternoon', label: 'दुपार (Afternoon)', icon: Sun, color: 'text-yellow-400' },
+          { key: 'golden', label: 'सोनेरी किरणे (Golden)', icon: CloudSun, color: 'text-orange-400' },
+          { key: 'evening', label: 'संध्याकाळ (Evening)', icon: Sunset, color: 'text-pink-400' },
+          { key: 'night', label: 'रात्र (Night)', icon: Moon, color: 'text-cyan-300' }
+        ].map((mode) => {
+          const IconComp = mode.icon;
+          const isActive = timeOfDay === mode.key;
+          return (
+            <button
+              key={mode.key}
+              onClick={() => setTimeOfDay(mode.key as any)}
+              className={`text-xs px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-semibold transition-all ${
+                isActive
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-bold shadow-md shadow-orange-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+              }`}
+              title={`Switch Lighting to ${mode.label}`}
+            >
+              <IconComp className={`w-3.5 h-3.5 ${isActive ? 'text-slate-950' : mode.color}`} />
+              <span className="text-[11px]">{mode.label.split(' ')[0]}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {/* Interactive Controls Bar */}
-      <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-950/90 backdrop-blur-xl border border-slate-800 rounded-xl">
+      <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-between gap-2 p-2 bg-slate-950/90 backdrop-blur-xl border border-slate-800 rounded-xl z-20">
         {/* Floor Selection */}
         <div className="flex items-center gap-1">
           <span className="text-xs text-slate-400 font-medium px-2 hidden sm:inline flex items-center gap-1">
@@ -477,19 +680,6 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
             }`}
           >
             <Eye className="w-4 h-4" />
-          </button>
-
-          {/* Sunlight mode */}
-          <button
-            onClick={() => {
-              const modes: ('day' | 'golden' | 'night')[] = ['day', 'golden', 'night'];
-              const nextIndex = (modes.indexOf(sunlightMode) + 1) % modes.length;
-              setSunlightMode(modes[nextIndex]);
-            }}
-            title={`Sunlight Mode: ${sunlightMode.toUpperCase()}`}
-            className="p-2 rounded-lg text-amber-400 hover:bg-slate-800 text-xs transition-all border border-amber-500/20"
-          >
-            <Sun className="w-4 h-4" />
           </button>
 
           {/* Auto-rotation Toggle */}
