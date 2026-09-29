@@ -68,6 +68,27 @@ export const ComprehensiveLeadForm: React.FC = () => {
       console.warn('LocalStorage lead persistence failed:', e);
     }
 
+    // Direct Email Webhook Forwarder (Formspree / Backend API)
+    const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT || 'https://formspree.io/f/mqaegezg';
+    try {
+      fetch(formspreeEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          leadId: generatedId,
+          clientName: formData.name,
+          phone: formData.mobile,
+          email: formData.email,
+          city: formData.city,
+          projectType: formData.projectType,
+          budget: formData.budget,
+          source: 'BIMSpace Digital ShreeGonda Web Portal'
+        })
+      }).catch((err) => console.log('Formspree background sync:', err));
+    } catch (e) {
+      // Graceful fallback
+    }
+
     // Direct WhatsApp Redirection
     const waText = encodeURIComponent(
       `*नमस्कार इंजिनिअर साहेब (श्रीगोंदा सिव्हिल कन्सल्टन्सी)*\n\n` +
