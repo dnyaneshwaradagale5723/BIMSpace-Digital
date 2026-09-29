@@ -32,6 +32,7 @@ import { ComprehensiveLeadForm } from './components/ComprehensiveLeadForm';
 import { AdminDashboardView } from './components/AdminDashboardView';
 import { OnlineEstimationCalculator } from './components/OnlineEstimationCalculator';
 import { GrowthSecretsModule } from './components/GrowthSecretsModule';
+import { LegalFaqKnowledgeHub } from './components/LegalFaqKnowledgeHub';
 import { MOCK_CLIENTS, ClientUser } from './data/agencyData';
 import { SHREEGONDA_CONFIG, SHREEGONDA_PROCESS_STEPS, CONSULTANCY_PACKAGES, Language } from './data/shreegondaData';
 
@@ -199,6 +200,7 @@ export default function App() {
             { label: language === 'mr' ? 'सर्व्हिसेस व पॅकेजेस' : 'Services & Packages', hash: '#packages-section' },
             { label: language === 'mr' ? 'बांधकाम प्रगती' : 'Progress Timeline', hash: '#timeline-section' },
             { label: language === 'mr' ? 'नकाशे व कागदपत्रे' : 'Document Vault', hash: '#documents-section' },
+            { label: language === 'mr' ? 'करारपत्र व FAQ' : 'Legal & FAQs', hash: '#legal-faq-section' },
             { label: language === 'mr' ? 'कोटेशन फॉर्म' : 'Quote Inquiry', hash: '#lead-form-section' }
           ].map((item, idx) => (
             <a
@@ -375,6 +377,11 @@ export default function App() {
         {/* Municipal Sanction & Document Hub */}
         <section id="documents-section" className="container">
           <DocumentHub />
+        </section>
+
+        {/* Legal Contract Drafting, FAQs & Knowledge Hub */}
+        <section id="legal-faq-section" className="container">
+          <LegalFaqKnowledgeHub language={language} />
         </section>
 
         {/* Lead Inquiry Form */}
