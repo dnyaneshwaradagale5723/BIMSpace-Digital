@@ -13,6 +13,7 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
   const [activeFloor, setActiveFloor] = useState<'all' | 'ground' | 'first' | 'roof'>('all');
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening' | 'night' | 'golden'>('afternoon');
   const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [webglSupported, setWebglSupported] = useState<boolean>(true);
 
   // References to three objects for interaction
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -25,8 +26,22 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
-    const width = container.clientWidth;
-    const height = container.clientHeight || 480;
+    const width = container.clientWidth || window.innerWidth;
+    const height = container.clientHeight || 420;
+    const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+
+    // Test WebGL support
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!gl) {
+        setWebglSupported(false);
+        return;
+      }
+    } catch (e) {
+      setWebglSupported(false);
+      return;
+    }
 
     // 1. Scene
     const scene = new THREE.Scene();
@@ -40,23 +55,36 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
     camera.lookAt(0, 2, 0);
     cameraRef.current = camera;
 
-    // 3. Renderer - Optimized for zero lag, power efficiency & high FPS
-    const isMobile = window.innerWidth < 768;
-    const renderer = new THREE.WebGLRenderer({
-      antialias: !isMobile, // Disable expensive antialiasing on low-end mobile to eliminate lag
-      alpha: true,
-      powerPreference: 'high-performance'
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 1.75));
-    renderer.shadowMap.enabled = !isMobile; // Enable soft shadows on desktop, optimize mobile
-    if (!isMobile) {
-      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // 3. Renderer - Safe Mobile Fallback & Initialization
+    let renderer: THREE.WebGLRenderer;
+    try {
+      const isMobile = window.innerWidth < 768;
+      renderer = new THREE.WebGLRenderer({
+        antialias: !isMobile,
+        alpha: true,
+        powerPreference: 'default'
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.shadowMap.enabled = !isMobile;
+      if (!isMobile) {
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      }
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      
+      // Ensure canvas doesn't steal entire page vertical scroll
+      renderer.domElement.style.touchAction = 'pan-y';
+      renderer.domElement.style.width = '100%';
+      renderer.domElement.style.height = '100%';
+      
+      container.appendChild(renderer.domElement);
+      rendererRef.current = renderer;
+    } catch (err) {
+      console.warn('WebGL Renderer Initialization Error on Mobile:', err);
+      setWebglSupported(false);
+      return;
     }
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    container.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
 
     // 4. Lights - Optimized intensities
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
@@ -614,12 +642,27 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
 
   return (
     <div
-      className="relative w-full h-[460px] md:h-[540px] rounded-2xl overflow-hidden glass-panel border border-cyan-500/30"
+      className="relative w-full h-[440px] md:h-[540px] rounded-2xl overflow-hidden glass-panel border border-cyan-500/30"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Three.js Canvas Container */}
-      <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+      {!webglSupported ? (
+        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-slate-900 to-slate-950">
+          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400 mb-4">
+            <Building2 className="w-8 h-8" />
+          </div>
+          <h3 className="text-xl font-bold text-white mb-2">3D Architectural Villa (Mobile Mode)</h3>
+          <p className="text-xs text-slate-400 max-w-sm mb-4 leading-relaxed">
+            तुमच्या मोबाईल ब्राऊझरसाठी हाय-डेफिनिशन 3D रेंडर्स, 2D फ्लोअर प्लॅन्स आणि वॉकथ्रू खालील सेक्शन्समध्ये उपलब्ध आहेत.
+          </p>
+          <a href="#gallery-section" className="btn-gold text-xs py-2 px-4">
+            3D फोटो व वॉकथ्रू पहा
+          </a>
+        </div>
+      ) : (
+        /* Three.js Canvas Container */
+        <div ref={containerRef} className="w-full h-full cursor-grab active:cursor-grabbing" style={{ touchAction: 'pan-y' }} />
+      )}
 
       {/* Top Overlay Badges */}
       <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2 pointer-events-none">
