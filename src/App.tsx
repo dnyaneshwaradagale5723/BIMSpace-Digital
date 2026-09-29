@@ -33,6 +33,7 @@ import { AdminDashboardView } from './components/AdminDashboardView';
 import { OnlineEstimationCalculator } from './components/OnlineEstimationCalculator';
 import { GrowthSecretsModule } from './components/GrowthSecretsModule';
 import { LegalFaqKnowledgeHub } from './components/LegalFaqKnowledgeHub';
+import { TrustSignalsAndBimSection } from './components/TrustSignalsAndBimSection';
 import { MOCK_CLIENTS, ClientUser } from './data/agencyData';
 import { SHREEGONDA_CONFIG, SHREEGONDA_PROCESS_STEPS, CONSULTANCY_PACKAGES, Language } from './data/shreegondaData';
 
@@ -382,6 +383,11 @@ export default function App() {
         {/* Legal Contract Drafting, FAQs & Knowledge Hub */}
         <section id="legal-faq-section" className="container">
           <LegalFaqKnowledgeHub language={language} />
+        </section>
+
+        {/* Verified Trust Signals & BIM LOD Framework */}
+        <section id="trust-bim-section" className="container">
+          <TrustSignalsAndBimSection language={language} />
         </section>
 
         {/* Lead Inquiry Form */}
