@@ -30,6 +30,7 @@ import { ServicesAndPackagesView } from './components/ServicesAndPackagesView';
 import { ComprehensiveLeadForm } from './components/ComprehensiveLeadForm';
 import { AdminDashboardView } from './components/AdminDashboardView';
 import { OnlineEstimationCalculator } from './components/OnlineEstimationCalculator';
+import { GrowthSecretsModule } from './components/GrowthSecretsModule';
 import { MOCK_CLIENTS, ClientUser } from './data/agencyData';
 import { SHREEGONDA_CONFIG, SHREEGONDA_PROCESS_STEPS, CONSULTANCY_PACKAGES, Language } from './data/shreegondaData';
 
@@ -161,7 +162,8 @@ export default function App() {
         <div className="container flex items-center gap-1.5 py-2">
           {[
             { label: language === 'mr' ? '3D मॉडेल' : '3D Model', hash: '#model-hero' },
-            { label: language === 'mr' ? 'खर्च कॅल्क्युलेटर (BOQ)' : 'Estimation Calculator', hash: '#calculator-section' },
+            { label: language === 'mr' ? 'खर्च कॅल्क्युलेटर' : 'Estimation (BOQ)', hash: '#calculator-section' },
+            { label: language === 'mr' ? '५ गुप्त सिक्रेट्स (QR/सुरक्षा)' : '5 Growth Secrets', hash: '#secrets-section' },
             { label: language === 'mr' ? '१२ पायऱ्यांची पद्धत' : '12-Step Work Process', hash: '#process-12' },
             { label: language === 'mr' ? '2D फ्लोअर प्लॅन्स' : '2D Floor Plans', hash: '#floorplans-section' },
             { label: language === 'mr' ? 'सर्व्हिसेस व पॅकेजेस' : 'Services & Packages', hash: '#packages-section' },
@@ -262,6 +264,14 @@ export default function App() {
         {/* Live Estimation & BOQ Calculator */}
         <section className="container">
           <OnlineEstimationCalculator language={language} />
+        </section>
+
+        {/* 5 Hidden Secrets: QR Banner, Privacy PIN, Offline Pack, Revision Policy, Watermarking */}
+        <section id="secrets-section" className="container">
+          <GrowthSecretsModule
+            currentUrl="https://bim-space-digital.vercel.app"
+            projectName="Patil Residence - Plot 42, ShreeGonda"
+          />
         </section>
 
         {/* 12-Step Work Process (श्रीगोंदा कार्यपद्धती) */}
