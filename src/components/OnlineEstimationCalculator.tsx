@@ -50,16 +50,16 @@ export const OnlineEstimationCalculator: React.FC<EstimationProps> = ({ language
             </div>
             <div>
               <span className="badge-gold text-xs">
-                {language === 'mr' ? 'लाईव्ह बांधकाम खर्च कॅल्क्युलेटर' : 'Live Construction Cost Calculator'}
+                {language === 'mr' ? 'प्रातिनिधिक अंदाजपत्रक (Indicative Estimate)' : 'Indicative Cost Estimate (Preliminary)'}
               </span>
               <h2 className="text-2xl md:text-3xl font-extrabold text-white">
-                {language === 'mr' ? 'घर बांधकामाचा ऑनलाइन अंदाज (BOQ)' : 'Home Construction Cost & BOQ Estimator'}
+                {language === 'mr' ? 'घर बांधकामाचा प्राथमिक अंदाज (Indicative BOQ)' : 'Indicative Construction Cost & Material Estimator'}
               </h2>
             </div>
           </div>
 
           <div className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-mono text-orange-400">
-            <span>DSR Maharashtra 2026 Indexed</span>
+            <span>DSR Maharashtra 2026 Reference</span>
           </div>
         </div>
 
