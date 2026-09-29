@@ -35,7 +35,7 @@ export const SHREEGONDA_CONFIG: ConsultancyConfig = {
   phone: "+91 98765 43210",
   whatsapp: "+919876543210",
   email: "contact@shreegondacivil.in",
-  principalEngineer: "Er. Dnyaneshwar Adagale (B.Tech Civil, COA Reg.)"
+  principalEngineer: "Er. Dnyaneshwar Adagale (B.Tech Civil - Consultant)"
 };
 
 export const SHREEGONDA_PROCESS_STEPS = [
