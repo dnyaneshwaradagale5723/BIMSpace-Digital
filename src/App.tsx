@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Building2,
   Share2,
@@ -6,16 +6,17 @@ import {
   Phone,
   Mail,
   MapPin,
-  ExternalLink,
-  Shield,
-  Layers,
-  Sparkles,
-  ChevronRight,
-  Send,
+  Lock,
+  Compass,
   CheckCircle2,
   Calendar,
-  Compass,
-  FileCheck
+  Send,
+  MessageCircle,
+  Sparkles,
+  ClipboardCheck,
+  Eye,
+  Globe,
+  HardHat
 } from 'lucide-react';
 import { ThreeModelViewer } from './components/ThreeModelViewer';
 import { FloorPlanViewer } from './components/FloorPlanViewer';
@@ -24,11 +25,16 @@ import { ProgressTimeline } from './components/ProgressTimeline';
 import { MediaWalkthroughGallery } from './components/MediaWalkthroughGallery';
 import { DocumentHub } from './components/DocumentHub';
 import { SmartExpiryBadge } from './components/SmartExpiryBadge';
+import { ClientLoginModal } from './components/ClientLoginModal';
+import { WhatsAppSupportButton } from './components/WhatsAppSupportButton';
 import { SAMPLE_PROJECT } from './data/projectData';
+import { AGENCY_INFO, MOCK_CLIENTS, STEPS_WORKFLOW, ClientUser } from './data/agencyData';
 
 export default function App() {
   const [project] = useState(SAMPLE_PROJECT);
-  const [activeSection, setActiveSection] = useState<'3d' | 'plans' | 'boq' | 'timeline' | 'gallery' | 'docs'>('3d');
+  const [activeClient, setActiveClient] = useState<ClientUser>(MOCK_CLIENTS[0]);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [activeSection, setActiveSection] = useState<'3d' | 'plans' | 'boq' | 'timeline' | 'gallery' | 'docs' | 'workflow'>('3d');
   const [contactMessageSent, setContactMessageSent] = useState<boolean>(false);
   const [shareSuccess, setShareSuccess] = useState<boolean>(false);
 
@@ -48,27 +54,57 @@ export default function App() {
     setTimeout(() => setContactMessageSent(false), 4000);
   };
 
+  const openWhatsAppDirect = () => {
+    const message = encodeURIComponent(
+      `Hello Ar. Dnyaneshwar Adagale,\n\nI am viewing my personal Digital Home Package portal for project: *${activeClient.projectName}*.\n\n*Client:* ${activeClient.clientName}\n*Query:* `
+    );
+    window.open(`https://wa.me/919876543210?text=${message}`, '_blank');
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-slate-950 font-sans">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500 selection:text-slate-950 font-sans">
+      {/* Top VIP Announcement Ribbon */}
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-amber-500/30 py-1.5 px-4 text-center text-xs">
+        <div className="container flex items-center justify-between">
+          <div className="flex items-center gap-2 text-amber-400 font-mono text-[11px] mx-auto md:mx-0">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span className="font-bold uppercase tracking-wider">Exclusive Server Access:</span>
+            <span className="text-slate-200">Valid for 1 Full Year ({activeClient.validDaysRemaining} Days Active)</span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-3 text-xs">
+            <span className="text-slate-400 font-mono">Current VIP Client:</span>
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              className="font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-0.5 rounded-full border border-amber-500/30"
+            >
+              <Lock className="w-3 h-3" />
+              <span>{activeClient.clientName}</span>
+              <span className="text-[10px] text-cyan-400 font-mono underline">(Switch)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* 1. Header & Navigation Bar */}
-      <header className="sticky top-0 z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
         <div className="container py-3.5 flex items-center justify-between gap-4">
-          {/* Brand Logo & Project Title */}
+          {/* Brand Logo & Tagline */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-slate-950 shadow-lg shadow-cyan-500/20">
-              <Building2 className="w-5 h-5 stroke-[2.5]" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/25 border border-amber-300/40">
+              <Building2 className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base md:text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300 bg-clip-text text-transparent">
-                  BIMSpace Digital
+                <span className="font-extrabold text-lg md:text-xl tracking-tight bg-gradient-to-r from-amber-300 via-yellow-200 to-white bg-clip-text text-transparent">
+                  {AGENCY_INFO.name}
                 </span>
-                <span className="text-[10px] font-mono text-cyan-400 border border-cyan-500/30 px-1.5 py-0.5 rounded bg-cyan-950/50 hidden sm:inline">
-                  VastuTwin AI™
+                <span className="text-[10px] font-mono text-amber-400 border border-amber-500/40 px-1.5 py-0.5 rounded bg-amber-950/40 hidden sm:inline">
+                  VIP Portal
                 </span>
               </div>
-              <div className="text-xs text-slate-400 font-medium truncate max-w-[200px] sm:max-w-xs md:max-w-md">
-                {project.projectTitle}
+              <div className="text-xs text-slate-400 font-medium italic">
+                {AGENCY_INFO.tagline}
               </div>
             </div>
           </div>
@@ -76,16 +112,26 @@ export default function App() {
           {/* Right Header Badges & Actions */}
           <div className="flex items-center gap-2.5">
             {/* 1-Year Expiry Badge */}
-            <SmartExpiryBadge />
+            <SmartExpiryBadge initialExpiryDays={activeClient.validDaysRemaining} />
 
-            {/* Share Client Link Button */}
+            {/* Client Login / Switch Modal Trigger */}
+            <button
+              onClick={() => setIsLoginModalOpen(true)}
+              className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 border-amber-500/30 hover:border-amber-400"
+              title="Secure Client Passcode Login"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Client</span> Login
+            </button>
+
+            {/* Share Portal Link Button */}
             <button
               onClick={handleShare}
-              className="btn-secondary text-xs py-2 px-3 hidden md:inline-flex"
+              className="btn-secondary text-xs py-2 px-3 hidden lg:inline-flex"
               title="Share Digital Twin Portal Link"
             >
               <Share2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{shareSuccess ? 'Link Copied!' : 'Share Twin'}</span>
+              <span>{shareSuccess ? 'Copied!' : 'Share'}</span>
             </button>
 
             {/* Download Approved PDFs Quick Trigger */}
@@ -97,22 +143,23 @@ export default function App() {
               className="btn-primary text-xs py-2 px-3 md:px-4"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Download Approved</span> CAD
+              <span className="hidden sm:inline">Sanction</span> CAD
             </button>
           </div>
         </div>
       </header>
 
       {/* Navigation Sub-bar */}
-      <nav className="border-b border-slate-800/80 bg-slate-900/40 backdrop-blur-md sticky top-[61px] z-30 overflow-x-auto">
-        <div className="container flex items-center gap-1 py-2">
+      <nav className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-[67px] z-30 overflow-x-auto">
+        <div className="container flex items-center gap-1.5 py-2">
           {[
-            { id: '3d', label: '3D Digital Twin', hash: '#model-hero' },
-            { id: 'plans', label: '2D CAD Floor Plans', hash: '#floorplans-section' },
-            { id: 'boq', label: 'BOQ & Materials', hash: '#boq-section' },
-            { id: 'timeline', label: 'Site Execution Timeline', hash: '#timeline-section' },
-            { id: 'gallery', label: 'Walkthrough Gallery', hash: '#gallery-section' },
-            { id: 'docs', label: 'Document Vault', hash: '#documents-section' }
+            { id: '3d', label: '3D Walkthrough Model', hash: '#model-hero' },
+            { id: 'plans', label: '2D Floor Plans', hash: '#floorplans-section' },
+            { id: 'boq', label: 'Project Estimation & BOQ', hash: '#boq-section' },
+            { id: 'timeline', label: 'Site Execution Milestones', hash: '#timeline-section' },
+            { id: 'gallery', label: '4K Renders & Drone', hash: '#gallery-section' },
+            { id: 'docs', label: 'Sanction Document Vault', hash: '#documents-section' },
+            { id: 'workflow', label: '5-Step Work Process', hash: '#process-section' }
           ].map((item) => (
             <a
               key={item.id}
@@ -120,7 +167,7 @@ export default function App() {
               onClick={() => setActiveSection(item.id as any)}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                 activeSection === item.id
-                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40'
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
               }`}
             >
@@ -138,15 +185,16 @@ export default function App() {
             {/* Left Column: Project Summary & Structural Specs */}
             <div className="lg:col-span-5 space-y-6">
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="badge-cyan text-xs">Client Digital Twin Portal</span>
-                  <span className="badge-gold text-xs">Vastu Verified N-E Facing</span>
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="badge-gold text-xs">Dnyaneshwar Associates VIP Portal</span>
+                  <span className="badge-cyan text-xs">Vastu Compliant 4BHK</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.15]">
-                  {project.projectTitle}
+                  {activeClient.projectName}
                 </h1>
                 <p className="text-slate-400 mt-3 text-sm md:text-base leading-relaxed">
-                  {project.tagline}. Designed & engineered with BIM accuracy, carbon-offset calculations, and premium luxury finishes.
+                  Personalized 1-Year Digital Home Package for <strong className="text-amber-300">{activeClient.clientName}</strong>. 
+                  Designed by {AGENCY_INFO.founder} with NBC structural compliance and high-end luxury interiors.
                 </p>
               </div>
 
@@ -155,55 +203,55 @@ export default function App() {
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
                   <div className="text-[11px] font-mono uppercase text-slate-400">Total Built-Up Area</div>
                   <div className="text-xl md:text-2xl font-bold text-white font-mono mt-0.5">
-                    {project.totalAreaSqft.toLocaleString()} <span className="text-xs text-cyan-400 font-sans">sq.ft</span>
+                    {activeClient.totalArea}
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-1">Ground + First + Terrace Deck</div>
+                  <div className="text-[11px] text-slate-500 mt-1">G + 1 + Terrace Solar Deck</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Turnkey Civil Budget</div>
+                  <div className="text-[11px] font-mono uppercase text-slate-400">Turnkey Project Estimate</div>
                   <div className="text-xl md:text-2xl font-bold text-amber-400 font-mono mt-0.5">
-                    ₹1.48 <span className="text-xs text-slate-300 font-sans">Cr Est.</span>
+                    {activeClient.budgetEst}
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-1">Includes Civil, Finishes & Solar</div>
+                  <div className="text-[11px] text-slate-500 mt-1">Material, Labor & Finishes</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Project Location</div>
+                  <div className="text-[11px] font-mono uppercase text-slate-400">Site Location</div>
                   <div className="text-xs font-semibold text-white mt-1 flex items-center gap-1.5 truncate">
                     <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                    <span>{project.location}</span>
+                    <span>{activeClient.location}</span>
                   </div>
-                  <div className="text-[10px] text-slate-500 mt-1 font-mono">PMC Zone: High-Value Basalt</div>
+                  <div className="text-[10px] text-slate-500 mt-1 font-mono">Pune Municipal Corporation</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Handover Timeline</div>
+                  <div className="text-[11px] font-mono uppercase text-slate-400">Portal Validity</div>
                   <div className="text-xs font-semibold text-white mt-1 flex items-center gap-1.5">
                     <Calendar className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>{project.targetHandover}</span>
+                    <span>Until {activeClient.validUntil}</span>
                   </div>
-                  <div className="text-[10px] text-emerald-400 mt-1 font-mono">On Schedule • Phase 4 Active</div>
+                  <div className="text-[10px] text-emerald-400 mt-1 font-mono">1-Year Dedicated Cloud</div>
                 </div>
               </div>
 
-              {/* Client Name & Contractor Team Signoff */}
-              <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/30 flex items-center justify-between gap-4">
+              {/* Direct WhatsApp Site Interaction CTA */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center font-bold text-cyan-300">
-                    RP
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                    <MessageCircle className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="text-[11px] text-cyan-300 uppercase tracking-wider font-mono">Registered Client</div>
-                    <div className="text-sm font-bold text-white">{project.clientName}</div>
+                    <div className="text-[11px] text-emerald-400 uppercase tracking-wider font-mono">Direct WhatsApp Support</div>
+                    <div className="text-xs text-slate-300">साइटवर बदल किंवा शंका असल्यास थेट चॅट करा</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[11px] text-slate-400 font-mono">Digital Signature</div>
-                  <div className="text-xs font-semibold text-emerald-400 flex items-center gap-1 justify-end">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Verified
-                  </div>
-                </div>
+                <button
+                  onClick={openWhatsAppDirect}
+                  className="btn-primary bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs py-2 px-3 font-bold"
+                >
+                  Chat Now
+                </button>
               </div>
             </div>
 
@@ -239,46 +287,43 @@ export default function App() {
           <DocumentHub />
         </section>
 
-        {/* Work Process / System Architecture Explainer */}
-        <section className="container">
-          <div className="glass-panel p-6 md:p-8 rounded-2xl border border-slate-800 bg-slate-900/40">
-            <div className="text-center max-w-2xl mx-auto mb-8">
-              <span className="badge-cyan text-xs mb-2">Automated Digital Pipeline</span>
-              <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                How BIMSpace Digital Works
+        {/* 8. 5-Step Work Process (काम करण्याची प्रक्रिया) */}
+        <section id="process-section" className="container">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-b from-slate-900/60 to-slate-950/80">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="badge-gold text-xs mb-2">Step-by-Step Delivery Blueprint</span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                काम करण्याची पारदर्शक प्रक्रिया (Work Process)
               </h2>
               <p className="text-sm text-slate-400 mt-2">
-                From native AutoCAD & Revit files to an interactive, unmetered client presentation link ready for site execution.
+                क्लायंटच्या गरजेनुसार सुरुवातीपासून प्रत्यक्ष चावी हातात पडेपर्यंतची ५ पायऱ्यांची खात्रीशीर पद्धत.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                {
-                  step: "01",
-                  title: "CAD & 3D Extraction",
-                  desc: "Raw AutoCAD .DWG drawings, SketchUp/Revit 3D geometry, and Excel BOQ sheets are extracted."
-                },
-                {
-                  step: "02",
-                  title: "AI Twin Upload",
-                  desc: "Models are compressed to WebGL GLTF, blueprints optimized into high-definition vector SVGs."
-                },
-                {
-                  step: "03",
-                  title: "Instant Cloud Deployment",
-                  desc: "A custom fast-edge subdomain (e.g. patil-villa.vastutwin.com) is provisioned with 1-Year Hosting."
-                },
-                {
-                  step: "04",
-                  title: "Site Contractor Access",
-                  desc: "Client shares digital link with civil contractors, electricians, and interior designers without messy PDFs."
-                }
-              ].map((proc, i) => (
-                <div key={i} className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
-                  <div className="font-mono text-cyan-400 font-extrabold text-2xl mb-2">{proc.step}</div>
-                  <h3 className="font-bold text-white text-base mb-1">{proc.title}</h3>
-                  <p className="text-xs text-slate-400 leading-relaxed">{proc.desc}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {STEPS_WORKFLOW.map((step) => (
+                <div
+                  key={step.step}
+                  className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-amber-500/50 transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-mono text-amber-400 font-extrabold text-2xl group-hover:scale-110 transition-transform">
+                        {step.step}
+                      </span>
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500/40 group-hover:bg-amber-400 transition-colors" />
+                    </div>
+                    <div className="text-[11px] font-bold text-amber-400 uppercase tracking-wide font-mono mb-1">
+                      {step.marathi}
+                    </div>
+                    <h3 className="font-bold text-white text-sm mb-2">{step.title}</h3>
+                    <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-900 flex items-center gap-1.5 text-[11px] text-cyan-400 font-mono">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Quality Verified</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -286,57 +331,63 @@ export default function App() {
         </section>
       </main>
 
-      {/* 8. Footer & Architect Contact Action Card */}
+      {/* 9. Footer & Architect Contact Action Card */}
       <footer className="border-t border-slate-800 bg-slate-950 mt-16 pt-12 pb-8">
         <div className="container space-y-12">
           {/* Architect Contact Card */}
-          <div className="glass-panel p-6 md:p-8 rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-amber-500/30 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7 space-y-3">
-                <span className="badge-cyan text-xs">Architect & Civil Consultant Contact</span>
+                <span className="badge-gold text-xs">Architect & Civil Consultant Contact</span>
                 <h3 className="text-2xl md:text-3xl font-extrabold text-white">
-                  {project.architect.firm}
+                  {AGENCY_INFO.name}
                 </h3>
                 <p className="text-sm text-slate-300">
-                  Lead Consultant: <strong className="text-white">{project.architect.name}</strong> • Licensed Council of Architecture ({project.architect.license}).
+                  Lead Consultant: <strong className="text-amber-300">{AGENCY_INFO.founder}</strong> • {AGENCY_INFO.qualifications}.
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-mono text-slate-400">
+                  <a
+                    href={`tel:${AGENCY_INFO.phone}`}
+                    className="flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors"
+                  >
+                    <Phone className="w-3.5 h-3.5 text-amber-400" /> {AGENCY_INFO.phone}
+                  </a>
+                  <a
+                    href={`mailto:${AGENCY_INFO.email}`}
+                    className="flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors"
+                  >
+                    <Mail className="w-3.5 h-3.5 text-amber-400" /> {AGENCY_INFO.email}
+                  </a>
                   <span className="flex items-center gap-1.5 text-slate-200">
-                    <Phone className="w-3.5 h-3.5 text-cyan-400" /> {project.architect.phone}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-slate-200">
-                    <Mail className="w-3.5 h-3.5 text-cyan-400" /> {project.architect.email}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-slate-200">
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400" /> {project.architect.office}
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> {AGENCY_INFO.officeAddress}
                   </span>
                 </div>
               </div>
 
               {/* Quick Inquiry Form */}
-              <div className="lg:col-span-5 bg-slate-950/70 p-5 rounded-xl border border-slate-800">
-                <h4 className="text-sm font-bold text-white mb-2">Request On-Site BIM Clarification</h4>
+              <div className="lg:col-span-5 bg-slate-950/80 p-5 rounded-2xl border border-slate-800">
+                <h4 className="text-sm font-bold text-white mb-2">Request On-Site Technical Clarification</h4>
                 {contactMessageSent ? (
-                  <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300 text-xs flex items-center gap-2">
+                  <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    Site query dispatched directly to Architect's WhatsApp & Email channel.
+                    Query dispatched directly to Er. Dnyaneshwar's desk.
                   </div>
                 ) : (
                   <form onSubmit={handleSendMessage} className="space-y-2.5">
                     <input
                       type="text"
                       required
-                      placeholder="Your Name (Contractor / Vendor)"
-                      className="w-full text-xs px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      placeholder="Your Name (Contractor / Vendor / Site In-charge)"
+                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
                     />
                     <input
                       type="text"
                       required
-                      placeholder="Query Subject (e.g. Slab Beam Level 1 Clarification)"
-                      className="w-full text-xs px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      placeholder="Query Subject (e.g. Beam Section / Tile Lot Verification)"
+                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
                     />
-                    <button type="submit" className="btn-primary text-xs py-2 w-full justify-center">
+                    <button type="submit" className="btn-gold text-xs py-2.5 w-full justify-center">
                       <Send className="w-3.5 h-3.5" /> Send Direct Site Note
                     </button>
                   </form>
@@ -348,15 +399,29 @@ export default function App() {
           {/* Copyright & Engine Attribution */}
           <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-800/80 text-xs text-slate-500">
             <div>
-              © 2026 <strong>BIMSpace Digital</strong> / VastuTwin AI. All Architectural Rights Reserved.
+              © 2026 <strong>{AGENCY_INFO.name}</strong>. All Architectural Rights Reserved.
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Hosted on VastuTwin AI Cloud Engine • Edge CDN Enabled</span>
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span>Personalized Digital Home Package • Valid for 1 Year Exclusive Access</span>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Floating Client Login Modal */}
+      <ClientLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        currentClient={activeClient}
+        onClientSwitch={(client) => setActiveClient(client)}
+      />
+
+      {/* Floating Direct WhatsApp Support Desk */}
+      <WhatsAppSupportButton
+        clientName={activeClient.clientName}
+        projectName={activeClient.projectName}
+      />
     </div>
   );
 }
