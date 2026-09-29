@@ -7,14 +7,15 @@ import {
   Mail,
   MapPin,
   Lock,
-  Calendar,
   Send,
   MessageCircle,
   Sparkles,
   LayoutDashboard,
-  ShieldCheck,
   CheckCircle2,
-  ArrowRight
+  Compass,
+  Layers,
+  Calculator,
+  Globe
 } from 'lucide-react';
 import { ThreeModelViewer } from './components/ThreeModelViewer';
 import { FloorPlanViewer } from './components/FloorPlanViewer';
@@ -28,12 +29,15 @@ import { WhatsAppSupportButton } from './components/WhatsAppSupportButton';
 import { ServicesAndPackagesView } from './components/ServicesAndPackagesView';
 import { ComprehensiveLeadForm } from './components/ComprehensiveLeadForm';
 import { AdminDashboardView } from './components/AdminDashboardView';
+import { OnlineEstimationCalculator } from './components/OnlineEstimationCalculator';
 import { MOCK_CLIENTS, ClientUser } from './data/agencyData';
+import { SHREEGONDA_CONFIG, SHREEGONDA_PROCESS_STEPS, CONSULTANCY_PACKAGES, Language } from './data/shreegondaData';
 
 export default function App() {
   const [activeClient, setActiveClient] = useState<ClientUser>(MOCK_CLIENTS[0]);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isAdminView, setIsAdminView] = useState<boolean>(false);
+  const [language, setLanguage] = useState<Language>('mr');
   const [contactMessageSent, setContactMessageSent] = useState<boolean>(false);
   const [shareSuccess, setShareSuccess] = useState<boolean>(false);
 
@@ -53,28 +57,53 @@ export default function App() {
     setTimeout(() => setContactMessageSent(false), 4000);
   };
 
+  const openWhatsApp = () => {
+    const text = encodeURIComponent(
+      `नमस्कार इंजिनिअर साहेब, मी ${SHREEGONDA_CONFIG.brandName[language]} च्या वेबसाइटवरून संपर्क करत आहे. मला घराच्या 2D/3D प्लॅनिंग व बांधकामाबाबत माहिती हवी आहे.`
+    );
+    window.open(`https://wa.me/919876543210?text=${text}`, '_blank');
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-slate-950 font-sans">
-      {/* 1. Top Enterprise Notice Ribbon */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-cyan-500/30 py-1.5 px-4 text-xs">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-orange-500 selection:text-slate-950 font-sans">
+      {/* 1. Top Enterprise Notice & Multi-Language Bar */}
+      <div className="bg-gradient-to-r from-slate-950 via-blue-950/40 to-slate-950 border-b border-orange-500/30 py-1.5 px-4 text-xs">
         <div className="container flex items-center justify-between">
-          <div className="flex items-center gap-2 text-cyan-400 font-mono text-[11px] mx-auto sm:mx-0">
-            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="font-bold uppercase tracking-wider">BuildVision Studio:</span>
-            <span className="text-slate-200">From Plan to Reality • 2D / 3D Civil Engineering + Digital Cloud Websites</span>
+          <div className="flex items-center gap-2 text-orange-400 font-mono text-[11px] mx-auto sm:mx-0">
+            <Compass className="w-3.5 h-3.5 text-orange-400 animate-spin" style={{ animationDuration: '20s' }} />
+            <span className="font-bold uppercase tracking-wider">{SHREEGONDA_CONFIG.brandName[language]}:</span>
+            <span className="text-slate-200">{SHREEGONDA_CONFIG.tagline[language]}</span>
           </div>
 
           <div className="hidden md:flex items-center gap-3 text-xs">
+            {/* Language Switcher */}
+            <div className="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-lg p-0.5 font-mono text-[11px]">
+              {(['mr', 'en', 'hi'] as const).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  className={`px-2 py-0.5 rounded-md font-bold transition-all ${
+                    language === lang
+                      ? 'bg-orange-500 text-slate-950'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {lang === 'mr' ? 'मराठी' : lang === 'en' ? 'ENG' : 'हिंदी'}
+                </button>
+              ))}
+            </div>
+
+            {/* Admin Switcher */}
             <button
               onClick={() => setIsAdminView(!isAdminView)}
-              className={`font-mono text-xs px-3 py-1 rounded-full flex items-center gap-1.5 transition-all ${
+              className={`font-mono text-xs px-2.5 py-1 rounded-full flex items-center gap-1.5 transition-all ${
                 isAdminView
-                  ? 'bg-amber-500 text-slate-950 font-bold'
-                  : 'bg-slate-900 text-amber-400 border border-amber-500/40 hover:bg-amber-500/10'
+                  ? 'bg-orange-500 text-slate-950 font-bold'
+                  : 'bg-slate-900 text-orange-400 border border-orange-500/40 hover:bg-orange-500/10'
               }`}
             >
-              <LayoutDashboard className="w-3.5 h-3.5" />
-              <span>{isAdminView ? 'Switch to Client View' : 'Admin Portal & CRM'}</span>
+              <LayoutDashboard className="w-3 h-3" />
+              <span>{isAdminView ? 'Client View' : 'Admin CRM'}</span>
             </button>
           </div>
         </div>
@@ -83,76 +112,62 @@ export default function App() {
       {/* 2. Main Header & Navigation Bar */}
       <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800">
         <div className="container py-3.5 flex items-center justify-between gap-4">
-          {/* Logo & Brand Identity */}
+          {/* Logo with House + Bridge + Compass theme */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-700 flex items-center justify-center text-slate-950 shadow-lg shadow-cyan-500/25 border border-cyan-300/40">
-              <Building2 className="w-6 h-6 stroke-[2.5]" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-700 via-blue-600 to-orange-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/25 border border-orange-400/40">
+              <Building2 className="w-6 h-6 stroke-[2.3]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg md:text-xl tracking-tight bg-gradient-to-r from-cyan-300 via-sky-200 to-white bg-clip-text text-transparent">
-                  BuildVision Studio
+                <span className="font-extrabold text-lg md:text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-orange-400 bg-clip-text text-transparent">
+                  {SHREEGONDA_CONFIG.brandName[language]}
                 </span>
-                <span className="text-[10px] font-mono text-cyan-400 border border-cyan-500/40 px-1.5 py-0.5 rounded bg-cyan-950/40 hidden sm:inline">
-                  Enterprise Suite
+                <span className="text-[10px] font-mono text-orange-400 border border-orange-500/40 px-1.5 py-0.5 rounded bg-orange-950/40 hidden sm:inline">
+                  {SHREEGONDA_CONFIG.domain}
                 </span>
               </div>
-              <div className="text-xs text-slate-400 font-medium italic">
-                From Plan to Reality.
+              <div className="text-xs text-slate-400 font-medium">
+                {SHREEGONDA_CONFIG.tagline[language]}
               </div>
             </div>
           </div>
 
-          {/* Right Header Badges & Actions */}
+          {/* Actions */}
           <div className="flex items-center gap-2.5">
-            {/* 1-Year Expiry Badge */}
             <SmartExpiryBadge initialExpiryDays={activeClient.validDaysRemaining} />
 
-            {/* Client Login Trigger */}
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 border-slate-700 hover:border-cyan-400"
-              title="Secure Client Passcode Login"
+              className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5 border-slate-700 hover:border-orange-400"
+              title="Client Portal Login"
             >
-              <Lock className="w-3.5 h-3.5 text-cyan-400" />
+              <Lock className="w-3.5 h-3.5 text-orange-400" />
               <span className="hidden sm:inline">Client</span> Login
             </button>
 
-            {/* Share Portal Link Button */}
             <button
-              onClick={handleShare}
-              className="btn-secondary text-xs py-2 px-3 hidden lg:inline-flex"
-              title="Share Digital Twin Portal Link"
+              onClick={openWhatsApp}
+              className="btn-primary bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs py-2 px-3 font-bold"
             >
-              <Share2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{shareSuccess ? 'Copied!' : 'Share'}</span>
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">WhatsApp</span> Chat
             </button>
-
-            {/* Get Quote / Consultation Trigger */}
-            <a
-              href="#lead-form-section"
-              className="btn-primary text-xs py-2 px-3 md:px-4"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Request</span> Quote
-            </a>
           </div>
         </div>
       </header>
 
-      {/* Sub-Navigation Bar */}
+      {/* 3. Sub Navigation Bar */}
       <nav className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-[67px] z-30 overflow-x-auto">
         <div className="container flex items-center gap-1.5 py-2">
           {[
-            { label: '3D WebGL Model', hash: '#model-hero' },
-            { label: '33 Core Services', hash: '#services-section' },
-            { label: '2D Floor Plans', hash: '#floorplans-section' },
-            { label: 'Turnkey Packages', hash: '#packages-section' },
-            { label: 'Project BOQ & Materials', hash: '#boq-section' },
-            { label: 'Site Execution Milestones', hash: '#timeline-section' },
-            { label: '20-Step Work Process', hash: '#process-timeline' },
-            { label: 'CAD & Sanction Vault', hash: '#documents-section' },
-            { label: 'Detailed Quote Form', hash: '#lead-form-section' }
+            { label: language === 'mr' ? '3D मॉडेल' : '3D Model', hash: '#model-hero' },
+            { label: language === 'mr' ? 'खर्च कॅल्क्युलेटर (BOQ)' : 'Estimation Calculator', hash: '#calculator-section' },
+            { label: language === 'mr' ? '१२ पायऱ्यांची पद्धत' : '12-Step Work Process', hash: '#process-12' },
+            { label: language === 'mr' ? '2D फ्लोअर प्लॅन्स' : '2D Floor Plans', hash: '#floorplans-section' },
+            { label: language === 'mr' ? 'सर्व्हिसेस व पॅकेजेस' : 'Services & Packages', hash: '#packages-section' },
+            { label: language === 'mr' ? 'बांधकाम प्रगती' : 'Progress Timeline', hash: '#timeline-section' },
+            { label: language === 'mr' ? 'नकाशे व कागदपत्रे' : 'Document Vault', hash: '#documents-section' },
+            { label: language === 'mr' ? 'कोटेशन फॉर्म' : 'Quote Inquiry', hash: '#lead-form-section' }
           ].map((item, idx) => (
             <a
               key={idx}
@@ -165,174 +180,223 @@ export default function App() {
         </div>
       </nav>
 
-      {/* Main Content Body */}
+      {/* Main Page Content */}
       <main className="flex-1 space-y-16 md:space-y-24 py-8 md:py-12">
-        {/* Toggleable Admin CRM Back-office View */}
+        {/* Toggleable Admin View */}
         {isAdminView ? (
           <section className="container">
-            <div className="p-4 mb-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between">
-              <span className="text-xs text-amber-300 font-mono">
-                🔒 You are viewing the BuildVision Studio Admin Management CRM. (Non-AI + AI workflows enabled).
+            <div className="p-4 mb-6 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-between">
+              <span className="text-xs text-orange-300 font-mono">
+                🔒 श्रीगोंदा सिव्हिल कन्सल्टन्सी - ॲडमिन डॅशबोर्ड व CRM (Leads, Projects & Quotations)
               </span>
               <button
                 onClick={() => setIsAdminView(false)}
                 className="btn-gold text-xs py-1 px-3"
               >
-                Back to Public & Client Portal
+                Back to Public View
               </button>
             </div>
             <AdminDashboardView />
           </section>
         ) : null}
 
-        {/* 1. Hero Section: Split Layout (Project Summary + 3D Model Canvas) */}
+        {/* Hero Section */}
         <section id="model-hero" className="container">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            {/* Left Column: Project Summary & Structural Specs */}
             <div className="lg:col-span-5 space-y-6">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="badge-cyan text-xs">BuildVision Studio Master Platform</span>
-                  <span className="badge-gold text-xs">Vastu & NBC Compliant</span>
+                  <span className="badge-gold text-xs">{SHREEGONDA_CONFIG.brandName[language]}</span>
+                  <span className="badge-cyan text-xs">Shrigonda & Ahmednagar</span>
                 </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-[1.15]">
-                  Design Your Dream Home in 2D, 3D & Digital.
+                  {language === 'mr'
+                    ? 'तुमचे स्वप्नातील घर — 2D, 3D आणि अचूक अंदाजपत्रकासह.'
+                    : 'Plan. Design. Build. Your Dream Home in 2D & 3D.'}
                 </h1>
                 <p className="text-slate-400 mt-3 text-sm md:text-base leading-relaxed">
-                  Turnkey architectural planning, structural analysis, photorealistic 3D visualization, and personal project presentation websites for modern clients.
+                  {language === 'mr'
+                    ? 'वास्तूशास्त्र, म्युनिसिपल नियम आणि अत्याधुनिक 3D व्हिज्युअलायझेशनसह संपूर्ण घर डिझाईन आणि साईट सुपरव्हिजन सेवा.'
+                    : 'Turnkey architectural planning, structural engineering, photorealistic 3D visualization, and online BOQ estimation.'}
                 </p>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3">
+                <a href="#calculator-section" className="btn-gold text-xs py-2.5 px-4 font-bold">
+                  <Calculator className="w-4 h-4" />
+                  {language === 'mr' ? 'बांधकाम खर्च काढा' : 'Calculate Estimate'}
+                </a>
                 <a href="#lead-form-section" className="btn-primary text-xs py-2.5 px-4">
-                  Get Free Consultation
+                  {language === 'mr' ? 'मोफत सल्ला मिळवा' : 'Get Free Consultation'}
                 </a>
-                <a href="#services-section" className="btn-secondary text-xs py-2.5 px-4">
-                  View 33 Services
-                </a>
-                <a href="#packages-section" className="btn-gold text-xs py-2.5 px-4">
-                  Special House Package
-                </a>
+                <button onClick={openWhatsApp} className="btn-secondary text-xs py-2.5 px-4 text-emerald-400">
+                  <MessageCircle className="w-4 h-4" /> WhatsApp
+                </button>
               </div>
 
-              {/* Quick Structural & Budget Metrics */}
               <div className="grid grid-cols-2 gap-3 pt-2">
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Featured Active Twin</div>
-                  <div className="text-base md:text-lg font-bold text-white font-sans mt-0.5 truncate">
-                    {activeClient.projectName}
+                  <div className="text-[11px] font-mono uppercase text-slate-400">मुख्य अभियंता</div>
+                  <div className="text-sm font-bold text-white mt-0.5 truncate">
+                    {SHREEGONDA_CONFIG.principalEngineer.split('(')[0]}
                   </div>
-                  <div className="text-[11px] text-cyan-400 font-mono mt-1">{activeClient.totalArea}</div>
+                  <div className="text-[10px] text-orange-400 font-mono mt-1">B.Tech Civil • COA Reg.</div>
                 </div>
 
                 <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800">
-                  <div className="text-[11px] font-mono uppercase text-slate-400">Turnkey Civil Budget</div>
-                  <div className="text-xl md:text-2xl font-bold text-amber-400 font-mono mt-0.5">
-                    {activeClient.budgetEst}
+                  <div className="text-[11px] font-mono uppercase text-slate-400">कार्यालय पत्ता</div>
+                  <div className="text-sm font-bold text-slate-200 mt-0.5 truncate">
+                    श्रीगोंदा शहर, जि. अहिल्यानगर
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-1">Material, Labor & Finishes</div>
+                  <div className="text-[10px] text-slate-500 mt-1 font-mono">Pin 413701</div>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: WebGL Interactive 3D Model */}
             <div className="lg:col-span-7">
               <ThreeModelViewer />
             </div>
           </div>
         </section>
 
-        {/* 2. 33 Core Services & Packages View */}
-        <section id="services-section" className="container">
-          <div id="packages-section" className="scroll-mt-24">
-            <ServicesAndPackagesView />
+        {/* Live Estimation & BOQ Calculator */}
+        <section className="container">
+          <OnlineEstimationCalculator language={language} />
+        </section>
+
+        {/* 12-Step Work Process (श्रीगोंदा कार्यपद्धती) */}
+        <section id="process-12" className="container">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-slate-800 bg-slate-900/40">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="badge-cyan text-xs mb-2">
+                {language === 'mr' ? 'काम करण्याची खात्रीशीर पायरी' : 'Standard Engineering Workflow'}
+              </span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                {language === 'mr' ? 'प्रकल्पाची १२ टप्प्यांची कार्यपद्धती' : '12-Step Professional Work Process'}
+              </h2>
+              <p className="text-sm text-slate-400 mt-2">
+                {language === 'mr'
+                  ? 'प्लॅनपासून ते चावी हातात पडेपर्यंतची पारदर्शक आणि शास्त्रोक्त पद्धत.'
+                  : 'From initial site survey to final as-built drawings and keys handover.'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3.5">
+              {SHREEGONDA_PROCESS_STEPS.map((step) => (
+                <div
+                  key={step.step}
+                  className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-orange-500/50 transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <span className="font-mono text-orange-400 font-extrabold text-lg block mb-1 group-hover:scale-105 transition-transform">
+                      Step {step.step}
+                    </span>
+                    <h4 className="font-bold text-white text-xs mb-1">
+                      {language === 'mr' ? step.mr : step.en}
+                    </h4>
+                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                  <div className="mt-3 pt-2 border-t border-slate-900 text-[10px] text-emerald-400 font-mono flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" /> Certified Step
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
-        {/* 3. Interactive 2D Floor Plan Tab View */}
+        {/* 2D Floor Plan Viewer */}
         <section id="floorplans-section" className="container">
           <FloorPlanViewer />
         </section>
 
-        {/* 4. 3D Elevation & 4K Walkthrough Section */}
+        {/* 3D Walkthrough Gallery */}
         <section id="gallery-section" className="container">
           <MediaWalkthroughGallery />
         </section>
 
-        {/* 5. Material Specifications & BOQ Accordion */}
+        {/* Services & Turnkey Packages */}
+        <section id="packages-section" className="container">
+          <ServicesAndPackagesView />
+        </section>
+
+        {/* BOQ Material Breakdown */}
         <section id="boq-section" className="container">
           <MaterialBoqAccordion />
         </section>
 
-        {/* 6. Live Site Progress Tracker */}
+        {/* Live Site Progress Tracker */}
         <section id="timeline-section" className="container">
           <ProgressTimeline />
         </section>
 
-        {/* 7. Municipal Sanction & Document Hub */}
+        {/* Municipal Sanction & Document Hub */}
         <section id="documents-section" className="container">
           <DocumentHub />
         </section>
 
-        {/* 8. Detailed Comprehensive Lead Inquiry Form */}
+        {/* Lead Inquiry Form */}
         <section className="container">
           <ComprehensiveLeadForm />
         </section>
       </main>
 
-      {/* 9. Footer & Architect Contact Card */}
+      {/* Footer */}
       <footer className="border-t border-slate-800 bg-slate-950 mt-16 pt-12 pb-8">
         <div className="container space-y-12">
-          {/* Action Card */}
-          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-cyan-500/30 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950">
+          <div className="glass-panel p-6 md:p-8 rounded-3xl border border-orange-500/30 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-950">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7 space-y-3">
-                <span className="badge-cyan text-xs">BuildVision Studio Head Office</span>
+                <span className="badge-gold text-xs">
+                  {language === 'mr' ? 'अधिकृत संपर्क केंद्र' : 'Official Consultancy Office'}
+                </span>
                 <h3 className="text-2xl md:text-3xl font-extrabold text-white">
-                  BuildVision Studio & Associates
+                  {SHREEGONDA_CONFIG.brandName[language]}
                 </h3>
                 <p className="text-sm text-slate-300">
-                  Lead Engineering Consultant: <strong className="text-cyan-300">Ar. Dnyaneshwar Adagale</strong> • Licensed Architect (COA/2023/CA-88491) & Civil Engineer.
+                  {SHREEGONDA_CONFIG.principalEngineer} • {SHREEGONDA_CONFIG.tagline[language]}
                 </p>
 
                 <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-mono text-slate-400">
-                  <a href="tel:+919876543210" className="flex items-center gap-1.5 text-slate-200 hover:text-cyan-300">
-                    <Phone className="w-3.5 h-3.5 text-cyan-400" /> +91 98765 43210
+                  <a href={`tel:${SHREEGONDA_CONFIG.phone}`} className="flex items-center gap-1.5 text-slate-200 hover:text-orange-400">
+                    <Phone className="w-3.5 h-3.5 text-orange-400" /> {SHREEGONDA_CONFIG.phone}
                   </a>
-                  <a href="mailto:contact@buildvisionstudio.com" className="flex items-center gap-1.5 text-slate-200 hover:text-cyan-300">
-                    <Mail className="w-3.5 h-3.5 text-cyan-400" /> contact@buildvisionstudio.com
+                  <a href={`mailto:${SHREEGONDA_CONFIG.email}`} className="flex items-center gap-1.5 text-slate-200 hover:text-orange-400">
+                    <Mail className="w-3.5 h-3.5 text-orange-400" /> {SHREEGONDA_CONFIG.email}
                   </a>
                   <span className="flex items-center gap-1.5 text-slate-200">
-                    <MapPin className="w-3.5 h-3.5 text-cyan-400" /> Baner Road, Pune, Maharashtra 411045
+                    <MapPin className="w-3.5 h-3.5 text-orange-400" /> {SHREEGONDA_CONFIG.location}
                   </span>
                 </div>
               </div>
 
-              {/* Inquiry dispatch form */}
               <div className="lg:col-span-5 bg-slate-950/80 p-5 rounded-2xl border border-slate-800">
-                <h4 className="text-sm font-bold text-white mb-2">Request Immediate Site Assessment</h4>
+                <h4 className="text-sm font-bold text-white mb-2">
+                  {language === 'mr' ? 'थेट इंजिनिअरशी संपर्क साधा' : 'Contact Lead Engineer'}
+                </h4>
                 {contactMessageSent ? (
                   <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    Query transmitted directly to lead engineer's desk.
+                    आपला संदेश मिळाला आहे. आम्ही लवकरच संपर्क करू!
                   </div>
                 ) : (
                   <form onSubmit={handleSendMessage} className="space-y-2.5">
                     <input
                       type="text"
                       required
-                      placeholder="Your Name (Client / Contractor)"
-                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      placeholder="तुमचे नाव (Full Name)"
+                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-orange-400"
                     />
                     <input
-                      type="text"
+                      type="tel"
                       required
-                      placeholder="Project Location / Plot Size"
-                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+                      placeholder="मोबाईल नंबर (WhatsApp Number)"
+                      className="w-full text-xs px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-orange-400"
                     />
-                    <button type="submit" className="btn-primary text-xs py-2.5 w-full justify-center">
-                      <Send className="w-3.5 h-3.5" /> Transmit Inquiry
+                    <button type="submit" className="btn-gold text-xs py-2.5 w-full justify-center">
+                      <Send className="w-3.5 h-3.5" /> {language === 'mr' ? 'संदेश पाठवा' : 'Send Message'}
                     </button>
                   </form>
                 )}
@@ -340,20 +404,18 @@ export default function App() {
             </div>
           </div>
 
-          {/* Copyright & Engine Attribution */}
           <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-800/80 text-xs text-slate-500">
             <div>
-              © 2026 <strong>BuildVision Studio</strong>. All Architectural & Engineering Rights Reserved.
+              © 2026 <strong>{SHREEGONDA_CONFIG.brandName[language]}</strong>. सर्व हक्क राखीव.
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-              <span>Turnkey 2D/3D Architecture + 1-Year Dedicated Client Website Hosting</span>
+              <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+              <span>{SHREEGONDA_CONFIG.domain} • Vastu & Municipal Approved Standards</span>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* Floating Client Login Modal */}
       <ClientLoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
@@ -361,7 +423,6 @@ export default function App() {
         onClientSwitch={(client) => setActiveClient(client)}
       />
 
-      {/* Floating Direct WhatsApp Support Desk */}
       <WhatsAppSupportButton
         clientName={activeClient.clientName}
         projectName={activeClient.projectName}
