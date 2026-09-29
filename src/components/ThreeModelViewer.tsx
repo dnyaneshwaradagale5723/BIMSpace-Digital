@@ -22,6 +22,11 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
   const groupRef = useRef<THREE.Group | null>(null);
   const animFrameId = useRef<number | null>(null);
   const lightsRef = useRef<{ dir: THREE.DirectionalLight; ambient: THREE.AmbientLight; point: THREE.PointLight } | null>(null);
+  const rotationActiveRef = useRef<boolean>(true);
+
+  useEffect(() => {
+    rotationActiveRef.current = rotationActive;
+  }, [rotationActive]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -487,7 +492,7 @@ export const ThreeModelViewer: React.FC<ThreeModelViewerProps> = () => {
       // Only render when component is actually visible to the user (saves 90% GPU lag)
       if (!isVisibleOnScreen) return;
 
-      if (rotationActive && !isDragging) {
+      if (rotationActiveRef.current && !isDragging) {
         buildingGroup.rotation.y += autoRotationSpeed;
       }
 

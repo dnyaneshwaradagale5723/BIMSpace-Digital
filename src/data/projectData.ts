@@ -77,7 +77,7 @@ export const SAMPLE_PROJECT: ProjectData = {
   tagline: "Ultra-Modern 4BHK Climate-Resilient Sustainable Residence",
   location: "Plot 42, Baner Hills, Pune, Maharashtra",
   totalAreaSqft: 3850,
-  estimatedBudget: 14850000,
+  estimatedBudget: 9202100,
   currency: "INR",
   startDate: "15 Jan 2026",
   targetHandover: "20 Dec 2026",
@@ -85,12 +85,12 @@ export const SAMPLE_PROJECT: ProjectData = {
   expiresAt: "2027-01-15T09:00:00Z",
   status: 'active',
   architect: {
-    name: "Ar. Dnyaneshwar Adagale",
-    firm: "BIMSpace Digital & Architecture",
-    license: "COA/2023/CA-88491 | IGBC Certified",
+    name: "Er. Dnyaneshwar Adagale",
+    firm: "ShreeGonda Civil Consultancy",
+    license: "B.Tech Civil Engineering • Structural Consultant",
     phone: "+91 98765 43210",
-    email: "contact@bimspacedigital.com",
-    office: "Baner Business Bay, Pune, Maharashtra"
+    email: "contact@shreegondacivil.in",
+    office: "Station Road, Shrigonda, Ahmednagar, Maharashtra"
   }
 };
 
@@ -137,7 +137,7 @@ export const BOQ_CATEGORIES: BoqCategory[] = [
   {
     category: "Civil & Structural Engineering",
     iconName: "Hammer",
-    subtotal: 7850000,
+    subtotal: 5495900,
     items: [
       { id: "boq-1", itemName: "Ready Mix Concrete (RMC) M25/M30", specGrade: "Ultratech Super Cement (Design Mix with flyash < 15%)", quantity: 320, unit: "Cu.M", rate: 5800, amount: 1856000 },
       { id: "boq-2", itemName: "High Yield Strength TMT Rebars (Fe 550D)", specGrade: "Tata Tiscon 550D (Corrosion resistant primary bars)", quantity: 24.5, unit: "Metric Ton", rate: 68500, amount: 1678250 },
@@ -149,7 +149,7 @@ export const BOQ_CATEGORIES: BoqCategory[] = [
   {
     category: "Architectural Finishes & Surfaces",
     iconName: "Palette",
-    subtotal: 4250000,
+    subtotal: 2093200,
     items: [
       { id: "boq-6", itemName: "Full Body Vitrified Slab Flooring", specGrade: "Simpolo / Nexion 1600x800mm Satin Matte Finish", quantity: 3200, unit: "Sq.Ft", rate: 260, amount: 832000 },
       { id: "boq-7", itemName: "Exterior Climate Weather Coat Paint", specGrade: "Asian Paints Apex Ultima Protek (7-Yr System)", quantity: 5400, unit: "Sq.Ft", rate: 78, amount: 421200 },
@@ -160,7 +160,7 @@ export const BOQ_CATEGORIES: BoqCategory[] = [
   {
     category: "Plumbing, Electrical & Smart Home",
     iconName: "Zap",
-    subtotal: 2750000,
+    subtotal: 1613000,
     items: [
       { id: "boq-10", itemName: "Concealed Sanitary & Brass Fittings", specGrade: "Kohler Avid Series / Grohe Thermostatic Diverters", quantity: 5, unit: "Bath Sets", rate: 98000, amount: 490000 },
       { id: "boq-11", itemName: "FR-LSH Low Smoke Halogen Wires", specGrade: "Polycab Green Wire 1.5 sq.mm - 6.0 sq.mm multi-strand", quantity: 45, unit: "Coils", rate: 3400, amount: 153000 },
