@@ -17,16 +17,20 @@ export const OnlineEstimationCalculator: React.FC<EstimationProps> = ({ language
     luxury: 3100
   };
 
-  const totalCost = builtUpArea * rates[constructionQuality] * floorsCount;
+  // Base total cost
+  const baseCost = builtUpArea * rates[constructionQuality] * floorsCount;
+  // 7% Contingency buffer for material rate fluctuation & unforeseen site changes
+  const contingencyBuffer = Math.round(baseCost * 0.07);
+  const totalCost = baseCost + contingencyBuffer;
 
   // Granular breakdown percentages
-  const cementCost = Math.round(totalCost * 0.16);
-  const steelCost = Math.round(totalCost * 0.18);
-  const sandAggregateCost = Math.round(totalCost * 0.12);
-  const masonryCost = Math.round(totalCost * 0.10);
-  const finishingTilesCost = Math.round(totalCost * 0.16);
-  const plumbingElectricalCost = Math.round(totalCost * 0.12);
-  const laborContractCost = Math.round(totalCost * 0.16);
+  const cementCost = Math.round(baseCost * 0.16);
+  const steelCost = Math.round(baseCost * 0.18);
+  const sandAggregateCost = Math.round(baseCost * 0.12);
+  const masonryCost = Math.round(baseCost * 0.10);
+  const finishingTilesCost = Math.round(baseCost * 0.16);
+  const plumbingElectricalCost = Math.round(baseCost * 0.12);
+  const laborContractCost = Math.round(baseCost * 0.16);
 
   const formatINR = (val: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -168,6 +172,23 @@ export const OnlineEstimationCalculator: React.FC<EstimationProps> = ({ language
               <span className="text-slate-400 block font-mono">मजुरी / लेबर खर्च (16%)</span>
               <span className="text-white font-bold font-mono text-sm">{formatINR(laborContractCost)}</span>
               <span className="text-[10px] text-slate-500 block">Civil Contractor Rate</span>
+            </div>
+
+            <div className="p-3 rounded-xl bg-orange-950/40 border border-orange-500/40 col-span-2 sm:col-span-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-orange-400 font-bold font-mono text-xs flex items-center gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    {language === 'mr' ? 'अतिरिक्त आकस्मिक फंड (7% Contingency Buffer)' : '7% Material Escalation Contingency Buffer'}
+                  </span>
+                  <span className="text-[11px] text-slate-400 block mt-0.5">
+                    {language === 'mr' ? 'बाजारभावातील अचानक चढ-उतार व ऑन-साईट अनपेक्षित कामासाठी राखीव निधी' : 'Dedicated hedge against steel/cement price spikes & unforeseen foundation work'}
+                  </span>
+                </div>
+                <span className="text-orange-300 font-bold font-mono text-sm shrink-0">
+                  +{formatINR(contingencyBuffer)}
+                </span>
+              </div>
             </div>
           </div>
         </div>
