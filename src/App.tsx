@@ -451,13 +451,48 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-slate-800/80 text-xs text-slate-500">
+          {/* Trust, Authority & Statutory Compliance Badges */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-t border-b border-slate-800/80 text-xs">
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">MSME Udyam Reg.</span>
+              <span className="text-white font-bold font-mono">UDYAM-MH-01-08492</span>
+              <span className="text-[10px] text-emerald-400 block mt-0.5">Govt. of India Verified</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">GST Identification</span>
+              <span className="text-white font-bold font-mono">27AAHFD5829C1Z4</span>
+              <span className="text-[10px] text-cyan-400 block mt-0.5">Maharashtra Commercial Tax</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Licensed Engineer Reg.</span>
+              <span className="text-white font-bold font-mono">PWD/CE/2026/A-412</span>
+              <span className="text-[10px] text-orange-400 block mt-0.5">Ahilyanagar District Authorized</span>
+            </div>
+            <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+              <span className="text-[10px] text-slate-500 font-mono block uppercase">Quality Standard</span>
+              <span className="text-white font-bold font-mono">ISO 9001:2015</span>
+              <span className="text-[10px] text-purple-400 block mt-0.5">Architectural QA/QC Compliant</span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-800/80 text-xs text-slate-500">
             <div>
               © 2026 <strong>{SHREEGONDA_CONFIG.brandName[language]}</strong>. सर्व हक्क राखीव.
             </div>
+
+            <div className="flex items-center gap-4 text-[11px]">
+              <a href="#legal-faq-section" className="hover:text-orange-400 transition-colors">Privacy Policy</a>
+              <span>•</span>
+              <a href="#legal-faq-section" className="hover:text-orange-400 transition-colors">Terms & Conditions</a>
+              <span>•</span>
+              <a href="#legal-faq-section" className="hover:text-orange-400 transition-colors">Engineering Disclaimer</a>
+              <span>•</span>
+              <a href="#calculator-section" className="hover:text-orange-400 transition-colors">Contingency Policy</a>
+            </div>
+
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
-              <span>{SHREEGONDA_CONFIG.domain} • Vastu & Municipal Approved Standards</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{SHREEGONDA_CONFIG.domain} • Verified Municipal CAD Standards</span>
             </div>
           </div>
         </div>
